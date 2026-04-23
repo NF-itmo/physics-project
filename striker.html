@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Printable</title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+        <meta name="generator" content="FreeCAD 1.0.2">
+        <style>
+            * {
+                margin: 0;
+                padding: 0;
+            }
+            body {
+                background: #ffffff; /* Old browsers */
+                background: -moz-linear-gradient(top, #e3e9fc 0%, #ffffff 70%, #e2dab3 100%); /* FF3.6-15 */
+                background: -webkit-linear-gradient(top, #e3e9fc 0%,#ffffff 70%,#e2dab3 100%); /* Chrome10-25, Safari5.1-6 */
+                background: linear-gradient(to bottom, #e3e9fc 0%,#ffffff 70%,#e2dab3 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+                width: 100vw;
+                height: 100vh;
+            }
+            canvas { display: block; }
+            #mainCanvas {
+                width: 100%;
+                height: 100%;
+            }
+            #arrowCanvas  {
+                position: absolute;
+                left: 0px;
+                bottom: 0px;
+                width: 150px;
+                height: 150px;
+                z-index: 100;
+            }
+            select { width: 170px; }
+        </style>
+    </head>
+    <body>
+        <canvas id="mainCanvas"></canvas>
+        <canvas id="arrowCanvas"></canvas>
+        <script type="module">
+            // Direct from mrdoob: https://www.jsdelivr.com/package/npm/three
+            import * as THREE from            'https://cdn.jsdelivr.net/npm/three@0.125.0/build/three.module.js';
+            import { OrbitControls } from     'https://cdn.jsdelivr.net/npm/three@0.125.0/examples/jsm/controls/OrbitControls.js';
+            import { GUI } from               'https://cdn.jsdelivr.net/npm/three@0.125.0/examples/jsm/libs/dat.gui.module.js';
+            import { Line2 } from             'https://cdn.jsdelivr.net/npm/three@0.125.0/examples/jsm/lines/Line2.js';
+            import { LineMaterial } from      'https://cdn.jsdelivr.net/npm/three@0.125.0/examples/jsm/lines/LineMaterial.js';
+            import { LineGeometry } from      'https://cdn.jsdelivr.net/npm/three@0.125.0/examples/jsm/lines/LineGeometry.js';
+            import { EdgeSplitModifier } from 'https://cdn.jsdelivr.net/npm/three@0.125.0/examples/jsm/modifiers/EdgeSplitModifier.js';
+
+            const data = {"camera":{"type":"Orthographic","focalDistance":100.0,"position_x":112.03564453125,"position_y":-108.75823974609375,"position_z":-100.65719604492188},"file":{},"objects":[{"name":"\u0412\u0435\u0440\u0445 \u0431\u043e\u0439\u043a\u0430","color":"#cccccc","opacity":1.0,"verts":"2 a e d a b d a e c a b c f e d f e c f b c f b dBcCc dDcEc dFcGc dHcIc dJcKc dLcMc dNcOc dPcQc dRcSc dTcUc dVcWc dXcYc dZc1c d2c3c d4c5c d6c7c d8c9c d0c!c d#c$c d%c&c d(c)c d*c+c d-c:c d;c/c d=c>c d?c@c d[c]c d^c_c d,c.c d{c|c d}c~c drbYb d`c~c dad.c dbd]c dcd>c ddd:c ded)c dfd$c dgd9c d h i dhd5c did1c djdWc dkdSc dldOc d h h dmdKc dndGc dodEc dedpd dfdqd dddrd dcdsd dbdtd dadud d`cvd d}cvd d,cud d[ctd d=csd d-crd d(cpd d#cqd d8cwd d4cxd dZcyd dVczd dRcAd dNcBd dJcCd dFcDd dDcEd dBcFd dHcGd dLcHd dPcId dTcJd dXcKd d2cLd d6cMd d0cNd d%cOd d*cPd d;cQd d?cRd d^cSd d{cTd dUdCc d i g dVdIc dWdMc dXdQc dYdUc dZdYc d1d3c d2d7c d3d!c d4d&c d5d+c d6d/c d7d@c d8d_c d9d|c d l d d g i d h g d g h d9dTd d i k d8dSd d7dRd d6dQd d5dPd d4dOd d3dNd d2dMd d1dLd dZdKd dYdJd dXdId dWdHd dVdGd dUdFd dodEd d k h d k i dndDd d h j dmdCd dldBd dkdAd d h k d hZb djdzd didyd dhdxd dgdwd d g j d j g d j h dZb g d k j d j k d gZb d kZb d j i d j j dZb k d0dEc d!dCc d#dGc d$dIc d%dKc d&dMc d(dOc d)dQc d*dSc d+dUc d-dWc d:dYc d;d1c d/d3c d=d5c d>d7c d?d9c d@d!c d[d$c d]d&c d^d)c d_d+c d,d:c d.d/c d{d>c d|d@c d}d]c d~d_c d`d.c dae|c dbe~c dAcYb dce~c daeTd dde.c d~dSd dee]c d|dRd dfe>c d.dQd dge:c d_dPd dhe)c d]dOd die$c d@dNd dje9c d>dMd dke5c d/dLd dle1c d:dKd dmeWc d+dJd dneSc d)dId doeOc d&dHd dpeKc d$dGd dqeGc d!dFd dreEc d0dEd dseCc d#dDd dteIc d%dCd dueMc d(dBd dveQc d*dAd d jZb dweUc d-dzd dxeYc d;dyd dye3c d=dxd dze7c d?dwd dAe!c d[dqd dBe&c dCe+c dDe/c dEe@c dFe_c dGe|c d1b d dGeTd dFeSd dEeRd dDeQd dCePd dBeOd dAeNd dzeMd dyeLd dxeKd dweJd dveId dueHd dteGd dseFd dreEd dqeDd dpeCd doeBd dneAd dmezd dleyd dkexd djewd dieqd dhepd dgerd dfesd deetd ddeud dcevd dbevd d`dud d}dtd d{dsd d,drd d^dpd dBcCc cDcEc cFcGc cHcIc cJcKc cLcMc cNcOc cPcQc cRcSc cTcUc cVcWc cXcYc cZc1c c2c3c c4c5c c6c7c c8c9c c0c!c c#c$c c%c&c c(c)c c*c+c c-c:c c;c/c c=c>c c?c@c c[c]c c^c_c c,c.c c{c|c c}c~c crbYb c`c~c cad.c cbd]c ccd>c cdd:c ced)c cfd$c c h i cgd9c chd5c cid1c cjdWc ckdSc c h h cldOc cmdKc cndGc codEc cedpd cfdqd cddrd ccdsd cbdtd cadud c`cvd c}cvd c,cud c[ctd c=csd c-crd c(cpd c#cqd c8cwd c4cxd cZcyd cVczd cRcAd cNcBd cJcCd cFcDd cDcEd cBcFd cHcGd cLcHd cPcId cTcJd cXcKd c2cLd c6cMd c0cNd c%cOd c*cPd c;cQd c?cRd c^cSd c{cTd c i g cUdCc cVdIc cWdMc cXdQc cYdUc cZdYc c1d3c c2d7c c3d!c c4d&c c5d+c c6d/c c7d@c c8d_c c9d|c c l d c g i c h g c g h c i k c9dTd c8dSd c7dRd c6dQd c5dPd c4dOd c3dNd c2dMd c1dLd cZdKd cYdJd cXdId cWdHd cVdGd cUdFd codEd c k h c k i c h j cndDd cmdCd cldBd ckdAd c h k c hZb cjdzd cidyd chdxd cgdwd c g j c j g c j h cZb g c k j c j k c kZb c gZb c j i c j j cZb k c0dEc c!dCc c#dGc c$dIc c%dKc c&dMc c(dOc c)dQc c*dSc c+dUc c-dWc c:dYc c;d1c c/d3c c=d5c c>d7c c?d9c c@d!c c[d$c c]d&c c^d)c c_d+c c,d:c c.d/c c{d>c c|d@c c}d]c c~d_c c`d.c cae|c cbe~c cAcYb cce~c caeTd cde.c c~dSd cee]c c|dRd cfe>c c.dQd cge:c c_dPd che)c c]dOd cie$c c@dNd cje9c c>dMd cke5c c/dLd cle1c c:dKd cmeWc c+dJd cneSc c)dId coeOc c&dHd cpeKc c$dGd cqeGc c!dFd creEc c0dEd cseCc c#dDd cteIc c%dCd cueMc c(dBd cveQc c*dAd c jZb cweUc c-dzd cxeYc c;dyd cye3c c=dxd cze7c c?dwd cAe!c c[dqd cBe&c cCe+c cDe/c cEe@c cFe_c cGe|c c1b d cGeTd cFeSd cEeRd cDeQd cCePd cBeOd cAeNd czeMd cyeLd cxeKd cweJd cveId cueHd cteGd cseFd creEd cqeDd cpeCd coeBd cneAd cmezd cleyd ckexd cjewd cieqd chepd cgerd cfesd ceetd cdeud ccevd cbevd c`dud c}dtd c{dsd c,drd c^dpd c","facets":"2 a b c c b d e c f e a c b g d b h g b i j j k b b l i k m b b n l m o b b p n o q b b r p q s b b t r s u b b v t u w b b x v w y b b z x y A b b B z A C b b D B C E b b F D E G b b H F G I b b J H I K b b L J K M b b N L M O b O P b P Q b Q R b R S b S T b T U b V W U X W V Y W X Z W Y 1 W Z U W b 2 3 1 4 3 2 5 3 4 6 3 5 1 3 W 7 a 8 9 a 7 0 a 9 ! a 0 # a ! $ a # b a N % a $ & a % ( a & ) a ( * a ) + a * - a + : a - ; a : / a ; = a / > a = ? a > @ a ? [ a @ ] a [ ^ a ] _ a ^ , a _ . a , { a . | a { } a | ~ a } ` a ~ab a `bb aabcb abbdb acbeb adbfb aeb N afbgbhb 6ibhbgbjbhbibkbhbjblbhbkbmbhblbnbhbmbobhbnbpbhbobqbhbpbrbhbqbsbhbrbtbhbsbubhbtbvbhbubwbhbvb 6hb 3 Wxb bhbyb 3ybzb 3AbBbwbCbBbAbDbBbCbEbBbDbFbBbEbGbBbFbHbBbGbIbBbHbJbBbIbKbBbJbLbBbKbMbBbLbNbBbMbObBbNbPbBbObQbBbPbwbBbhbzbRbxbxbRbSbTbUbQbVbUbTbWbUbVbXbUbWbBbUbYbQbUbBbXbZbUb1bZbXb2bZb1b3bZb2b4bZb3b 8Zb4b aZb 8Ub5bYbRb6b7b6b8b7bYb9bybyb9bzb5b9bYb6b9b0bzb9bRbRb9b6b!b#b5b5b#b9b$b hSbSb hxbxb h b0b%b&b9b%b0b8b(b7b8b)b(b(b*b7b8b+b)b*b-b7b8b:b+b-b;b7b8b/b:b7b=b$b;b=b7b8b>b/b=b?b$b8b@b>b?b[b$b8b]b@b[b^b$b8b_b]b^b,b$b8b.b_b,b{b$b$b{b h8b|b.b{b}b h8b~b|b}b`b h8bac~b`bbc h8bccacbcdc h8becccdcfc h8bgcecfchc h8bicgc&bic8bhcjc h&bkcicjclc h&bmckclcnc h&bocmcncpc h&bqcocpcrc h&bscqcrctc h&bucsctcvc h&bwcucvcxc h&bycwcxczc h&bAcyczcBc h&bCcAcBcDc h&bEcCcDcFc h&bGcEcFcHc h&bIcGcHcJc h&bKcIcJcLc h&bMcKcLcNc h%bOc&b&bOcMcNcPc h%bQcOcPcRc h%bScQcRcTc h%bUcScTcVc h%bWcUcXcWc%bVcYc hXcZcWcYc1c hXc2cZc1c3c hXc4c2c3c5c hXc6c4c5c7c hXc8c6c7c9c h9c0c h0c!c h!c#c h#c$c h$c%c h%c&c hXc e8c(c e&c)c e(c*c e)c+c e*c-c e+c:c e-c;c e:c/c e;c=c e/c>c e=c?c e>c&c e h@c e?c[c e@c]c e[c^c e]c_c e^c,c e_c.c e,c{c e.c|c e{c}c e|c~c e}c`c e~cad e`cbd eadcd ebddd ecded eddfd eedgd efdhd egdid ehdjd eidkd ejdld ekdmd eldnd emd8c end a eZbZb e!b!b e#b#b eXcod dpdqdpd drd dodsdqd dtd drdudsd dvd dtdwdud dxd dvdydwd dzd dxdAdyd dBd dzdCdAd dDd dBdEdCd dFd dDdGdEd dHd dFdIdGd dJd dHdKdId dLd dJdMdKd dNd dLdOdMd dPd dNdQdOd dRd dPdSdQd dTd dRdUdSd dVdUd dWdVd dXdWd dYdXd dZdYd d1dZd d2d3d1d2d4d3d2d5d4d2d6d5d2d7d6d2d1d d8d9d7d8d0d9d8d!d0d8d#d!d8d7d2d c$d%d c&d$d c(d&d c)d(d c*d)d c+d*d c dTd c-d+d c:d-d c;d:d c/d;d c=d/d c>d=d c?d>d c@d?d c[d@d c]d[d c^d]d c_d^d c,d_d c.d,d c{d.d c|d{d c}d|d c~d}d c`d~d cae`d cbeae ccebe cdece ceede cfeee cgefe chege ciehe cjeie ckeje cleke cTdlemene#dmeoenemepeoemeqepemereqemeseremetesemeuetemeveuemewevemexewemeyexemezeyemeAezemeBeAemeCeBeme#d8dDe2d dEeme8dFeEe8dGeHeCeGeIeHeGeJeIeGeKeJeGeLeKeGeMeLeGeNeMeGeOeNeGePeOeGeQePeGeReQeGeSeReGeTeSeGeUeTeGeVeUeGeWeVeGeCemeXeFeDeXeDeYeZe1eWeZe2e1eZe3e2eZe4e3eZeGe5eZeWeGe6e4eZe6e7e4e6e8e7e6e9e8e6e0e9e6e%d0e6e c%d!eZe5e#eXe$e%e#e$e&e5eEe&eEeFe&e!e5e&e#e(e&eFeXe&eXe#e)e*e!e)e!e&e g+eYe gYeDe gDe d-e(e:e-e&e(e;e%e$e/e%e;e=e;e$e>e%e/e?e=e$e@e%e>e[e?e$e]e%e@e^e$e+e^e[e$e_e%e]e,e^e+e.e%e_e{e,e+e|e%e.e}e{e+e~e%e|e`e}e+eaf%e~ebf`e+ebf+e gcf%eafdfbf gef%ecfffdf ggf%eefhfff gif%egfjfhf gkf%eiflfjf gmf%ekfnflf gof%emfof:e%epfnf gqf:eofrfpf gsf:eqftfrf guf:esfvftf gwf:eufxfvf gyf:ewfzfxf gAf:eyfBfzf gCf:eAfDfBf gEf:eCfFfDf gGf:eEfHfFf gIf:eGfJfHf gKf:eIfLfJf gMf:eKfNfLf gOf:eMfPfNf gQf:eOfRfPf gSf:eQfTfRf gUf-e:eUf:eSfVfTf gWf-eUfXfVf gYf-eWfZfXf g1f-eYf2fZf g3f-e1f3f4f-e5f2f g6f4f3f7f5f g8f4f6f9f7f g0f4f8f!f9f g#f4f0f$f!f g%f4f#f&f$f g(f&f g)f(f g*f)f g+f*f g-f+f g:f-f g f4f%f f;f:f f/f;f f=f/f f>f=f f?f>f f@f?f f[f@f f]f[f f^f]f f_f^f f,f_f f:f g f.f,f f{f.f f|f{f f}f|f f~f}f f`f~f fag`f fbgag fcgbg fdgcg fegdg ffgeg fggfg fhggg fighg fjgig fkgjg flgkg fmglg fngmg fogng fpgog fqgpg frgqg fsgrg ftgsg f%ftg f c6e f6e*e f*e)e f)e4f h e g g e f8d2d 3 32d WFe 3zbFe8d 32dxb W2dDexbDeFexbxbFezbXeYeRbRbYeSb$eRb7b$eXeRbYe$bSbYe+e$b+e$e$b$b$e7bAbwbCeAbCeHeCbHeIeCbIeJeCbAbHeDbCbJeEbJeKeEbKeLeEbDbJeFbLeMeFbEbLeGbFbMeHbMeNeHbGbMeIbNeOeIbOePeIbHbNeJbIbPeKbPeQeKbJbPeLbKbQeLbQeReMbLbReMbReSeNbMbSeNbSeTeObNbTeObTeUePbUeVePbObUeQbVeWeQbPbVeTbWe1eTbQbWeVb1e2eVbTb1eWb2e3eWbVb2eXb3e4eXb4e7eXbWb3e1bXb7e2b7e8e2b8e9e2b1b7e3b2b9e4b9e0e4b0e%d4b3b9e 84b%d 7%d$d 7 8%d 9$d&d 9&d(d 9 7$d 0(d)d 0 9(d ! 0)d #)d*d #*d+d # !)d $ #+d %+d-d %-d:d % $+d & %:d (:d;d (;d/d ( &:d ) (/d * )/d */d=d +=d>d + *=d - +>d ->d?d : -?d :?d@d ; :@d ;@d[d ;[d]d / ;]d = /]d =]d^d > =^d >^d_d ? >_d ?_d,d @ ?,d @,d.d [ @.d [.d{d ] [{d ]{d|d ^ ]|d ^|d}d _ ^}d _}d~d ,~d`d , _~d .`dae . ,`d {aebe { .ae |bece | {be }cede } |ce ~deee ~ }de `eefe ` ~eeabfegeab `febbgehebbabgecbheiecbbbhedbiejedbcbieebjekeebdbjefbebkefbkele Nfble NleTd L NTd LTdRd J LRd JRdPd H JPd HPdNd F HNd FNdLd D FLd DLdJd B DJd BJdHd z BHd zHdFd x zFd xFdDd v xDd vDdBd t vBd tBdzd r tzd rzdxd p rxd pxdvd n pvd nvdtd l ntd ltdrd i lrd irdod j iod jodpd k jpd kpdqd m kqd mqdsd o msd osdud qudwd q oud swdyd s qwd uydAd u syd wAdCd w uAd yCdEd y wCd A yEd AEdGd C AGd CGdId E CId EIdKd G EKd GKdMd I GMd IMdOd K IOd KOdQd KQdSd M KSd O MSd OSdUd P OUd PUdVd Q PVd QVdWd R QWd RWdXd SYdZd S RXd SXdYd T SZd UZd1d U TZd V1d3d V U1d X3d4d X4d5d X V3d Y X5d Z5d6d Z Y5d 16d7d 1 Z6d 27d9d 29d0d 2 17d 4 20d 50d!d 5!d#d 5 40d 6 5#dgb#dnegb 6#dibgbneibneoejbiboejboepekbjbpekbpeqelbkbqelbqerembresemblbrenbsetenbmbseobteueobnbtepbuevepbobueqbveweqbpbverbwexerbqbwesbxeyesbrbxetbyezetbsbyeubzeAeubtbzevbAeBevbubAewbBeCewbvbBeGehbBbGemehb5eGeYbYbGeBbmeEehbhbEeybEeYbybEe5eYbUb!e5bZe!eUb!e*e!b!e!b5b6eZeUb6eUbZb!b6eZb*e6e!b:e(e0b:e0b&b0b#e6b(e#e0b#e%e8b#e8b6b8b:e&b%e:e8b(c&c:f(c:f;f)c;f/f)c/f=f)c(c;f*c)c=f+c=f>f+c>f?f+c*c=f-c?f@f-c+c?f:c-c@f;c@f[f;c:c@f/c[f]f/c]f^f/c;c[f=c/c^f>c^f_f>c=c^f?c>c_f?c_f,f@c?c,f@c,f.f[c@c.f[c.f{f]c[c{f]c{f|f^c|f}f^c]c|f_c}f~f_c^c}f,c~f`f,c_c~f.c`fag.c,c`f{cagbg{c.cag|cbgcg|ccgdg|c{cbg}c|cdg~cdgeg~cegfg~c}cdg`c~cfgadfgggadgghgad`cfgbdadhgcdhgigcdbdhgddigjgddjgkgddcdigedkglgedddkgfdedlggdlgmggdmgnggdfdlghdgdngidngogidogpgidhdngjdidpgkdpgqgkdqgrgkdjdpgldkdrgmdldrgmdrgsgndsgtgndmdsg8cndtg8ctg%f6c8c%f6c%f#f4c6c#f4c#f0f4c0f8f2c4c8fZc2c8fZc8f6fWcZc6fWc6f3fUcWc3fUc3f1fScUc1fSc1fYfQcScYfQcYfWfOcQcWfOcWfUfMcOcUfMcUfSfKcMcSfKcSfQfIcQfOfIcKcQfGcOfMfGcIcOfEcMfKfEcGcMfCcKfIfCcEcKfAcIfGfAcCcIfycGfEfycAcGfwcEfCfwcycEfucCfAfucwcCfscAfyfscucAfqcyfwfqcscyfocwfufocqcwfmcufsfmcocufkcmcsfkcsfqfickcqficqfofgcicofgcofmfecgcmfecmfkfcceckfcckfifacccifacifgf~bacgf~bgfef|b~bef|befcf.b|bcf.bcfaf_b.baf_baf~e]b_b~e]b~e|e@b]b|e@b|e.e>b@b.e>b.e_e/b>b_e/b_e]e:b/b]e:b]e@e+b:b@e+b@e>e)b+b>e)b>e/e(b)b/e(b/e;e*b(b;e*b;e=e-b*b=e-b=e?e;b-b?e;b?e[e=b[e^e=b;b[e?b^e,e?b=b^e[b,e{e[b?b,e^b{e}e^b[b{e,b}e`e,b^b}e{b,b`e{b`ebf}b{bbf}bbfdf`b}bdf`bdfffbc`bffbcffhfdcbchfdchfjffcdcjffcjflffclfnfhcfcnfjchcnfjcnfpflcjcpflcpfrfnclcrfncrftfpcnctfpctfvfrcxfzfrcpcvfrcvfxftcrczfvczfBfvctczfxcBfDfxcvcBfzcDfFfzcFfHfzcxcDfBczcHfDcHfJfDcBcHfFcJfLfFcDcJfHcLfNfHcNfPfHcFcLfJcHcPfLcPfRfLcRfTfLcJcPfNcLcTfPcTfVfPcNcTfRcPcVfRcVfXfTcRcXfTcXfZfVcTcZfVcZf2fYcVc2fYc2f5f1c5f7f1cYc5f3c7f9f3c1c7f5c9f!f5c3c9f7c!f$f7c5c!f9c$f&f9c7c$f0c&f(f0c9c&f!c(f)f!c0c(f#c)f*f#c!c)f$c*f+f$c#c*f%c+f-f%c$c+f&c-f:f&c%c-f9b-e%b&e-e9b-e4fXc-eXc%b)e&e9b)e9b#bXc)e#b4f)eXc","wires":["1abcabdaedaecabc","1aecaedfedfecaec","1fbcfbdabdabcfbc","1aedfedfbdabdaed","1ghdhhdhidgidghd","1jhdkhdkidjidjhd","2 l d d m n d o p d q r d s t d u v d w x d y z d A B d C D d E F d G H d I J d K L d M N d O P d Q R d S T d U V d W X d Y Z d 1 2 d 3 4 d 5 6 d 7 8 d 9 0 d ! # d $ % d & ( d ) * d + - d : ; d / = d > ; d ? - d @ * d [ ( d ] % d ^ # d _ 0 d , 8 d . 6 d { 4 d | 2 d } Z d ~ X d ` V dab T dbb R dcb P ddb N deb L dfb J dgb H dhb F dib D djb B dkb z dlb x dmb v dnb t dob r dpb p dqb n drb d dqbsb dpbtb dobub dnbvb dmbwb dlbxb dkbyb djbzb dibAb dhbBb dgbCb dfbDb debEb ddbFb dcbGb dbbHb dabIb d `Jb d ~Kb d }Lb d |Mb d {Nb d .Ob d ,Pb d _Qb d ^Rb d ]Sb d [Tb d @Ub d ?Vb d >Wb d /Xb d :Wb d +Vb d )Ub d &Tb d $Sb d !Rb d 9Qb d 7Pb d 5Ob d 3Nb d 1Mb d YLb d WKb d UJb d SIb d QHb d OGb d MFb d KEb d IDb d GCb d EBb d CAb d Azb d yyb d wxb d uwb d svb d qub d otb d msb d lYb d","1hkdikdigdhgdhkd","2 g j d gZb d hZb d h j d g j d","2 j g dZb g dZb k d j k d j g d","21b d d2b n d3b p d4b r d5b t d6b v d7b x d8b z d9b B d0b D d!b F d#b H d$b J d%b L d&b N d(b P d)b R d*b T d+b V d-b X d:b Z d;b 2 d/b 4 d=b 6 d>b 8 d?b 0 d@b # d[b % d]b ( d^b * d_b - d,b ; d.b = d{b ; d|b - d}b * d~b ( d`b % dac # dbc 0 dcc 8 ddc 6 dec 4 dfc 2 dgc Z dhc X dic V djc T dkc R dlc P dmc N dnc L doc J dpc H dqc F drc D dsc B dtc z duc x dvc v dwc t dxc r dyc p dzc n dAc d dzcsb dyctb dxcub dwcvb dvcwb ducxb dtcyb dsczb drcAb dqcBb dpcCb docDb dncEb dmcFb dlcGb dkcHb djcIb dicJb dhcKb dgcLb dfcMb decNb ddcOb dccPb dbcQb dacRb d`bSb d~bTb d}bUb d|bVb d{bWb d.bXb d,bWb d_bVb d^bUb d]bTb d[bSb d@bRb d?bQb d>bPb d=bOb d/bNb d;bMb d:bLb d-bKb d+bJb d*bIb d)bHb d(bGb d&bFb d%bEb d$bDb d#bCb d!bBb d0bAb d9bzb d8byb d7bxb d6bwb d5bvb d4bub d3btb d2bsb d1bYb d","2 j j d jZb d kZb d k j d j j d","1fecaecabcfbcfec","1hhcghcgichichhc","1khcjhcjickickhc","2 lYb c msb c otb c qub c svb c uwb c wxb c yyb c Azb c CAb c EBb c GCb c IDb c KEb c MFb c OGb c QHb c SIb c UJb c WKb c YLb c 1Mb c 3Nb c 5Ob c 7Pb c 9Qb c !Rb c $Sb c &Tb c )Ub c +Vb c :Wb c /Xb c >Wb c ?Vb c @Ub c [Tb c ]Sb c ^Rb c _Qb c ,Pb c .Ob c {Nb c |Mb c }Lb c ~Kb c `Jb cabIb cbbHb ccbGb cdbFb cebEb cfbDb cgbCb chbBb cibAb cjbzb ckbyb clbxb cmbwb cnbvb cobub cpbtb cqbsb crb d cqb n cpb p cob r cnb t cmb v clb x ckb z cjb B cib D chb F cgb H cfb J ceb L cdb N ccb P cbb R cab T c ` V c ~ X c } Z c | 2 c { 4 c . 6 c , 8 c _ 0 c ^ # c ] % c [ ( c @ * c ? - c > ; c / = c : ; c + - c ) * c & ( c $ % c ! # c 9 0 c 7 8 c 5 6 c 3 4 c 1 2 c Y Z c W X c U V c S T c Q R c O P c M N c K L c I J c G H c E F c C D c A B c y z c w x c u v c s t c q r c o p c m n c l d c","1ikchkchgcigcikc","2 gZb c g j c h j c hZb c gZb c","2Zb g c j g c j k cZb k cZb g c","21bYb c2bsb c3btb c4bub c5bvb c6bwb c7bxb c8byb c9bzb c0bAb c!bBb c#bCb c$bDb c%bEb c&bFb c(bGb c)bHb c*bIb c+bJb c-bKb c:bLb c;bMb c/bNb c=bOb c>bPb c?bQb c@bRb c[bSb c]bTb c^bUb c_bVb c,bWb c.bXb c{bWb c|bVb c}bUb c~bTb c`bSb cacRb cbcQb cccPb cdcOb cecNb cfcMb cgcLb chcKb cicJb cjcIb ckcHb clcGb cmcFb cncEb cocDb cpcCb cqcBb crcAb csczb ctcyb cucxb cvcwb cwcvb cxcub cyctb czcsb cAc d czc n cyc p cxc r cwc t cvc v cuc x ctc z csc B crc D cqc F cpc H coc J cnc L cmc N clc P ckc R cjc T cic V chc X cgc Z cfc 2 cec 4 cdc 6 ccc 8 cbc 0 cac # c`b % c~b ( c}b * c|b - c{b ; c.b = c,b ; c_b - c^b * c]b ( c[b % c@b # c?b 0 c>b 8 c=b 6 c/b 4 c;b 2 c:b Z c-b X c+b V c*b T c)b R c(b P c&b N c%b L c$b J c#b H c!b F c0b D c9b B c8b z c7b x c6b v c5b t c4b r c3b p c2b n c1b d c","2 jZb c j j c k j c kZb c jZb c","1fecfedfbdfbcfec","1hhchichidhhdhhc","1ghchhchhdghdghc","1hicgicgidhidhic","1gicghcghdgidgic","1khckickidkhdkhc","1jhckhckhdjhdjhc","1kicjicjidkidkic","1jicjhcjhdjidjic","2 l d d m n d o p d q r d s t d u v d w x d y z d A B d C D d E F d G H d I J d K L d M N d O P d Q R d S T d U V d W X d Y Z d 1 2 d 3 4 d 5 6 d 7 8 d 9 0 d ! # d $ % d & ( d ) * d + - d : ; d / = d > ; d ? - d @ * d [ ( d ] % d ^ # d _ 0 d , 8 d . 6 d { 4 d | 2 d } Z d ~ X d ` V dab T dbb R dcb P ddb N deb L dfb J dgb H dhb F dib D djb B dkb z dlb x dmb v dnb t dob r dpb p dqb n drb d dqbsb dpbtb dobub dnbvb dmbwb dlbxb dkbyb djbzb dibAb dhbBb dgbCb dfbDb debEb ddbFb dcbGb dbbHb dabIb d `Jb d ~Kb d }Lb d |Mb d {Nb d .Ob d ,Pb d _Qb d ^Rb d ]Sb d [Tb d @Ub d ?Vb d >Wb d /Xb d :Wb d +Vb d )Ub d &Tb d $Sb d !Rb d 9Qb d 7Pb d 5Ob d 3Nb d 1Mb d YLb d WKb d UJb d SIb d QHb d OGb d MFb d KEb d IDb d GCb d EBb d CAb d Azb d yyb d wxb d uwb d svb d qub d otb d msb d l d c lYb c msb c otb c qub c svb c uwb c wxb c yyb c Azb c CAb c EBb c GCb c IDb c KEb c MFb c OGb c QHb c SIb c UJb c WKb c YLb c 1Mb c 3Nb c 5Ob c 7Pb c 9Qb c !Rb c $Sb c &Tb c )Ub c +Vb c :Wb c /Xb c >Wb c ?Vb c @Ub c [Tb c ]Sb c ^Rb c _Qb c ,Pb c .Ob c {Nb c |Mb c }Lb c ~Kb c `Jb cabIb cbbHb ccbGb cdbFb cebEb cfbDb cgbCb chbBb cibAb cjbzb ckbyb clbxb cmbwb cnbvb cobub cpbtb cqbsb crb d cqb n cpb p cob r cnb t cmb v clb x ckb z cjb B cib D chb F cgb H cfb J ceb L cdb N ccb P cbb R cab T c ` V c ~ X c } Z c | 2 c { 4 c . 6 c , 8 c _ 0 c ^ # c ] % c [ ( c @ * c ? - c > ; c / = c : ; c + - c ) * c & ( c $ % c ! # c 9 0 c 7 8 c 5 6 c 3 4 c 1 2 c Y Z c W X c U V c S T c Q R c O P c M N c K L c I J c G H c E F c C D c A B c y z c w x c u v c s t c q r c o p c m n c l d c","1ikcigcigdikdikc","1hkcikcikdhkdhkc","1igchgchgdigdigc","1hgchkchkdhgdhgc","1hjcgjcgjdhjdhjc","2 g j c gZb c gZb d g j d g j c","2 hZb c h j c h j d hZb d hZb c","2 gZb c hZb c hZb d gZb d gZb c","2Zb k c j k c j k dZb k dZb k c","1jkcjgcjgdjkdjkc","2 j g cZb g cZb g d j g d j g c","2Zb g cZb k cZb k dZb g dZb g c","21b d d2b n d3b p d4b r d5b t d6b v d7b x d8b z d9b B d0b D d!b F d#b H d$b J d%b L d&b N d(b P d)b R d*b T d+b V d-b X d:b Z d;b 2 d/b 4 d=b 6 d>b 8 d?b 0 d@b # d[b % d]b ( d^b * d_b - d,b ; d.b = d{b ; d|b - d}b * d~b ( d`b % dac # dbc 0 dcc 8 ddc 6 dec 4 dfc 2 dgc Z dhc X dic V djc T dkc R dlc P dmc N dnc L doc J dpc H dqc F drc D dsc B dtc z duc x dvc v dwc t dxc r dyc p dzc n dAc d dzcsb dyctb dxcub dwcvb dvcwb ducxb dtcyb dsczb drcAb dqcBb dpcCb docDb dncEb dmcFb dlcGb dkcHb djcIb dicJb dhcKb dgcLb dfcMb decNb ddcOb dccPb dbcQb dacRb d`bSb d~bTb d}bUb d|bVb d{bWb d.bXb d,bWb d_bVb d^bUb d]bTb d[bSb d@bRb d?bQb d>bPb d=bOb d/bNb d;bMb d:bLb d-bKb d+bJb d*bIb d)bHb d(bGb d&bFb d%bEb d$bDb d#bCb d!bBb d0bAb d9bzb d8byb d7bxb d6bwb d5bvb d4bub d3btb d2bsb d1b d c1bYb c2bsb c3btb c4bub c5bvb c6bwb c7bxb c8byb c9bzb c0bAb c!bBb c#bCb c$bDb c%bEb c&bFb c(bGb c)bHb c*bIb c+bJb c-bKb c:bLb c;bMb c/bNb c=bOb c>bPb c?bQb c@bRb c[bSb c]bTb c^bUb c_bVb c,bWb c.bXb c{bWb c|bVb c}bUb c~bTb c`bSb cacRb cbcQb cccPb cdcOb cecNb cfcMb cgcLb chcKb cicJb cjcIb ckcHb clcGb cmcFb cncEb cocDb cpcCb cqcBb crcAb csczb ctcyb cucxb cvcwb cwcvb cxcub cyctb czcsb cAc d czc n cyc p cxc r cwc t cvc v cuc x ctc z csc B crc D cqc F cpc H coc J cnc L cmc N clc P ckc R cjc T cic V chc X cgc Z cfc 2 cec 4 cdc 6 ccc 8 cbc 0 cac # c`b % c~b ( c}b * c|b - c{b ; c.b = c,b ; c_b - c^b * c]b ( c[b % c@b # c?b 0 c>b 8 c=b 6 c/b 4 c;b 2 c:b Z c-b X c+b V c*b T c)b R c(b P c&b N c%b L c$b J c#b H c!b F c0b D c9b B c8b z c7b x c6b v c5b t c4b r c3b p c2b n c1b d c","1kjcjjcjjdkjdkjc","2 j j c jZb c jZb d j j d j j c","2 kZb c k j c k j d kZb d kZb c","2 jZb c kZb c kZb d jZb d jZb c"],"faceColors":[],"facesToFacets":["1ab","1cd","1ef","2 g h i j k l m n o p q r s t u v w x y z A B C D E F G H I J K L M N O P Q R S T U V W X Y Z 1 2 3 4 5 6 7 8 9 0 ! # $ % & ( ) * + - : ; / = > ? @ [ ] ^ _ , . { | } ~ `abbbcbdbebfbgbhbibjbkblbmbnbobpbqbrbsbtbubvbwbxbybzbAbBbCbDbEbFbGbHbIbJbKbLbMbNbObPbQbRbSbTbUbVbWbXbYbZb1b2b3b4b5b6b7b8b9b0b!b#b$b%b&b(b)b*b+b-b:b;b/b=b>b?b@b[b]b^b_b,b.b{b|b}b~b`bacbcccdcecfcgchcicjckclcmcncocpcqcrcsctcucvcwcxcyczcAcBcCcDcEcFcGcHcIcJcKcLcMcNcOcPcQcRcScTcUcVcWcXcYcZc1c2c3c4c5c6c7c8c9c0c!c#c$c%c&c(c)c*c+c-c:c;c/c=c>c?c@c[c]c^c_c,c.c{c|c}c~c`cadbdcdddedfdgdhdidjdkdldmdndodpdqdrdsdtdudvdwdxdydzdAdBdCdDd","2EdFdGdHdIdJdKdLdMdNdOdPdQdRdSdTdUdVdWdXdYdZd1d2d3d4d5d6d7d8d9d0d!d#d$d%d&d(d)d*d+d-d:d;d/d=d>d?d@d[d]d^d_d,d.d{d|d}d~d`daebecedeeefegeheiejekelemeneoepeqereseteuevewexeyezeAeBeCeDeEeFeGeHeIeJeKeLeMeNeOePeQeReSeTeUeVeWeXeYeZe1e2e3e4e5e6e7e8e9e0e!e#e$e%e&e(e)e*e+e-e:e;e/e=e>e?e@e[e]e^e_e,e.e{e|e}e~e`eafbfcfdfefffgfhfifjfkflfmfnfofpfqfrfsftfufvfwfxfyfzfAfBfCfDfEfFfGfHfIfJfKfLfMfNfOfPfQfRfSfTfUfVfWfXfYfZf1f2f3f4f5f6f7f8f9f0f!f#f$f%f&f(f)f*f+f-f:f;f/f=f>f?f@f[f]f^f_f,f.f{f|f}f~f`fagbgcgdgegfggghgigjgkglgmgngogpgqgrgsgtgugvgwgxgygzgAgBgCgDgEgFgGgHgIgJgKgLgMgNgOgPgQgRgSgTgUgVgWgXgYgZg1g2g","23g4g","25g6g","27g8g","29g0g","2!g#g","2$g%g","2&g(g","2)g*g","2+g-g","2:g;g/g=g>g?g@g[g]g^g_g,g.g{g|g}g~g`gahbhchdhehfhghhhihjhkhlhmhnhohphqhrhshthuhvhwhxhyhzhAhBhChDhEhFhGhHhIhJhKhLhMhNhOhPhQhRhShThUhVhWhXhYhZh1h2h3h4h5h6h7h8h9h0h!h#h$h%h&h(h)h*h+h-h:h;h/h=h>h?h@h[h]h^h_h,h.h{h|h}h~h`haibicidieifigihiiijikiliminioipiqirisitiuiviwixiyiziAiBiCiDiEiFiGiHiIiJiKiLiMiNiOiPiQiRiSiTiUiViWiXiYiZi1i2i3i4i5i6i7i8i9i0i!i#i$i%i&i(i)i*i+i-i:i;i/i=i>i?i@i[i]i^i_i,i.i{i|i}i~i`iajbjcjdjejfjgjhjijjjkjljmjnjojpjqjrjsjtjujvjwjxjyjzjAjBjCjDjEjFjGjHjIjJjKjLjMjNjOjPjQjRjSjTjUjVjWjXjYjZj1j2j","23j4j","25j6j","27j8j","29j0j","2!j#j","2$j%j","2&j(j","2)j*j","2+j-j","2:j;j","2/j=j","2>j?j","2@j[j]j^j_j,j.j{j|j}j~j`jakbkckdkekfkgkhkikjkkklkmknkokpkqkrksktkukvkwkxkykzkAkBkCkDkEkFkGkHkIkJkKkLkMkNkOkPkQkRkSkTkUkVkWkXkYkZk1k2k3k4k5k6k7k8k9k0k!k#k$k%k&k(k)k*k+k-k:k;k/k=k>k?k@k[k]k^k_k,k.k{k|k}k~k`kalblcldlelflglhliljlklllmlnlolplqlrlsltlulvlwlxlylzlAlBlClDlElFlGlHlIlJlKlLlMlNlOlPlQlRlSlTlUlVlWlXlYlZl1l2l3l4l5l6l7l8l9l0l!l#l$l%l&l(l)l*l+l-l:l;l/l=l>l?l@l[l]l^l_l,l.l{l|l}l~l`lambmcmdmemfmgmhmimjmkmlmmmnmompmqmrmsmtmumvmwmxmymzmAmBmCmDmEmFmGmHmImJmKmLmMmNmOmPmQmRmSmTmUmVmWmXmYmZm1m2m3m4m5m6m7m8m","29m0m","2!m#m","2$m%m","2&m(m"],"floats":"-MNrO[Jvd0Uv~@yiRaTu8&?cpPLv$4Uv~@yi3#2pa@Jvb0UvWU32TklekW|t!4Uv-)~UP81bDN1AR+pNdIb8v/ERsLQU6CETn+>C=Tfjs]Zq?J[/?hw:OMUj7#KB&)ybJ[uzy,JJftoV9E3cpW|t[2.+T%[6H3GR(oL&6CETwGp?.A3i$I4qISjGe}RRhhjjUD1OodzbVR@Gf?#yt2;2kE4dlgg2xtD7`2]K0k[R)Dw2Mfx)ZL?Gd9Ql)`7qnII/KzC_,:1l_!GVICzbYsP5C&rZ{*^&M>leMB/N`&9RdgpXmk]S^Gqu?L$M-5a{XTUlob&qR+vNB]EF&&~kGy,2g?zby3H,kn:>,km]Y5ne;e!8AjaD@R$.E-^Tc1*[BjC-g0Uv~@yiL7,q:GJWdIb8.Z{V2|,:X7g)UVABLRBb/n&FAyGil#ar~;bCT%[6+m}WEa.:r])>4pSO~bCb&mbX*zHmh#hrh/:R`2]KP*}X:#1A58QT&zBV~ACbo=5@{U|ijzlr!{c5dgpXa[RYoe.:aP01IC]2qZCbWMHwSc0mMLlrg|Oy@R$.{fTY)oC&84UvEP8j+x=on4{t6ZFxk]$FUVAB1yqbLcx)x,JJI.8jZ]>pW?;N4-C>Lo*z4pSO~zxb>!6Ig?#y%NIim$?qbBOU5)t7$.h#&zBVc^Ab(/I=E&rZy97j?eIrZZOUHO#QG>6#IC]2WJEb!I3Gmn:>vH`m,TJrZ@1AFt2M`9UvRaTutRQccCLvN5UvG?tn~bTYuT+AW5>3!5&@Gy,2FZ[dJfq#&P01]d`k_YRY_r7Ue6-E4eME_!GVWf>dnysLF9QT4=Rkru}Xm,6Uqu/_B`%/UD1OcN:drW_W]])>Z[Om5K|WQRbO%s(0i+1w7#KBXK%domP@u8g)F@8m=*.Vbvnu-NgYd0Uva,G]q*Vdoua^%*|GZpPmgSJTE0HHZZ>=*5a{Bhl(;$OdkF#$nR4)QI_m^lISdYi;Yo!7YL?GNo~2h&HdA)DS7~)5Hbekz}>RKZu2=[{CwGp?LQxVxpEd*cQyNJ|6?pak!FFRLs>8PAt{p+>C7EaVpfEd>)|@XGpz~@yi$*hrDP*PU)a=PTeV`(AbE%6IK~9.JEpVLACbH5V!7sA?U&QXGBOUFmOAF8omZ_GqES/NTc$wD95mJ]hr7bLXK)::5uPO:uEbz?gFeocDq|KOqbCbc?TvH8|GKkRY1?;N^t%,?y~lk;HrhW/NvAIy$+ElP&arZ,))_8=%D@:2x$tbUp601z:GyM/2^YCb/fu=vvny(WPWE*sH]U6+0u}lH3Fp2O/Np#CL8.lmwJlrES.Y)X!/UKwB,JEb3Bg7Rr3@2+qBKQBbosYGDzO^#.SY>/_:M*sXdSbmSQJrFNOU*5,(a-rlS0,q7FETE{i>?&~287mbB5QzptXEX?~2UlAbk&1xfjclOW*qZIc,DS},3:JTF=,:77y+O1S;61zbEF6:mw{k]R!qa1+*`9UvAGISEIsHBD[.PbD9iBzbA]R{!uJmzt^2f,me@=^8K;h76V(@b>C5J9B{lGvnyM/2$Eme_,8U:&qK*>.0bJfWV~j@n>0lJEpVSb5d%&muawOxx-_$1ljKZQDT>f]i*=gIav4c.&fuy?60P1EJ}qV%wNi10ylj-&=ulR2bX13An4Qz}MB0,4?R7x/NF$+F&742S*ybRo%w6P|l{}Zq!F3GOd4Zc6FR~mOUbDU$kMeVK)ybsBE[t.Vi3?Zq/-I=GZ:vUa,2L#Hdqa%%fG0N#rDk)cHS^Q>8PP_)o|@1&742wxLdI`*)(w1/~@yi@7GR`_Q&W$QMhBH8e;e(DnEd#CgE+1OzS`dkVuIT}ai;!#b$G,lTkMeVFASdI,O@E@1GCwhnZ/ER({HH#AkUmB_w,mB]@eEde({YuU+3uI}i.L.VHPk;pVQ0S_4xUKwB>N%d7YOxW:SCjanjXm|W_1JH5jk*e0Uv5uPOEQ:dq]{YafHW?lmnze}XulKH&te>N1O8]UzV}h>dNLMXLkbH*tYjNVRY6S+A`d-@qti#Nh]2/1[d{,{Y=Sa=r(~m=bTY*;l;A^OL"},{"name":"\u0412\u0435\u0440\u0445 \u0431\u043e\u0439\u043a\u0430001","color":"#cccccc","opacity":1.0,"verts":"2 a e d a b d a e c a b c f e d f e c f b c f b dCcDc dEcFc dGcHc dIcJc dKcLc dMcNc dOcPc dQcRc dScTc dUcVc dWcXc dYcZc d1c2c d3c4c d5c6c d7c8c d9c0c d!c#c d$c%c d&c(c d)c*c d+c-c d:c;c d/c=c d>c?c d@c[c d]c^c d_c,c d.c{c d|c}c d~c`c dsb m dad`c dbd{c dcd^c ddd?c ded;c dfd*c dgd%c dhd0c d h i did6c djd2c dkdXc dldTc dmdPc d h h dndLc dodHc dpdFc dfdqd dgdrd dedsd dddtd dcdud dbdvd dadwd d~cwd d.cvd d]cud d>ctd d:csd d)cqd d$crd d9cxd d5cyd d1czd dWcAd dScBd dOcCd dKcDd dGcEd dEcFd dCcGd dIcHd dMcId dQcJd dUcKd dYcLd d3cMd d7cNd d!cOd d&cPd d+cQd d/cRd d@cSd d_cTd d|cUd dVdDc d i g dWdJc dXdNc dYdRc dZdVc d1dZc d2d4c d3d8c d4d#c d5d(c d6d-c d7d=c d8d[c d9d,c d0d}c d l m d g i d h g d g h d0dUd d i k d9dTd d8dSd d7dRd d6dQd d5dPd d4dOd d3dNd d2dMd d1dLd dZdKd dYdJd dXdId dWdHd dVdGd dpdFd d k h d k i dodEd d h j dndDd dmdCd dldBd d h k d hZb dkdAd djdzd didyd dhdxd d g j d j g d j h dZb g d k j d j k d gZb d kZb d j i d j j dZb k d!dFc d#dDc d$dHc d%dJc d&dLc d(dNc d)dPc d*dRc d+dTc d-dVc d:dXc d;dZc d/d2c d=d4c d>d6c d?d8c d@d0c d[d#c d]d%c d^d(c d_d*c d,d-c d.d;c d{d=c d|d?c d}d[c d~d^c d`d,c dae{c dbe}c dce`c dAc m dde`c dbeUd dee{c d`dTd dfe^c d}dSd dge?c d{dRd dhe;c d,dQd die*c d^dPd dje%c d[dOd dke0c d?dNd dle6c d=dMd dme2c d;dLd dneXc d-dKd doeTc d*dJd dpePc d(dId dqeLc d%dHd dreHc d#dGd dseFc d!dFd dteDc d$dEd dueJc d&dDd dveNc d)dCd dweRc d+dBd d jZb dxeVc d:dAd dyeZc d/dzd dze4c d>dyd dAe8c d@dxd dBe#c d]drd dCe(c dDe-c dEe=c dFe[c dGe,c dHe}c d1b m dHeUd dGeTd dFeSd dEeRd dDeQd dCePd dBeOd dAeNd dzeMd dyeLd dxeKd dweJd dveId dueHd dteGd dseFd dreEd dqeDd dpeCd doeBd dneAd dmezd dleyd dkexd djerd dieqd dhesd dgetd dfeud deevd ddewd dcewd daevd d~dud d|dtd d.dsd d_dqd dCcDc cEcFc cGcHc cIcJc cKcLc cMcNc cOcPc cQcRc cScTc cUcVc cWcXc cYcZc c1c2c c3c4c c5c6c c7c8c c9c0c c!c#c c$c%c c&c(c c)c*c c+c-c c:c;c c/c=c c>c?c c@c[c c]c^c c_c,c c.c{c c|c}c c~c`c csb m cad`c cbd{c ccd^c cdd?c ced;c cfd*c cgd%c c h i chd0c cid6c cjd2c ckdXc cldTc c h h cmdPc cndLc codHc cpdFc cfdqd cgdrd cedsd cddtd ccdud cbdvd cadwd c~cwd c.cvd c]cud c>ctd c:csd c)cqd c$crd c9cxd c5cyd c1czd cWcAd cScBd cOcCd cKcDd cGcEd cEcFd cCcGd cIcHd cMcId cQcJd cUcKd cYcLd c3cMd c7cNd c!cOd c&cPd c+cQd c/cRd c@cSd c_cTd c|cUd c i g cVdDc cWdJc cXdNc cYdRc cZdVc c1dZc c2d4c c3d8c c4d#c c5d(c c6d-c c7d=c c8d[c c9d,c c0d}c c l m c g i c h g c g h c i k c0dUd c9dTd c8dSd c7dRd c6dQd c5dPd c4dOd c3dNd c2dMd c1dLd cZdKd cYdJd cXdId cWdHd cVdGd cpdFd c k h c k i c h j codEd cndDd cmdCd cldBd c h k c hZb ckdAd cjdzd cidyd chdxd c g j c j g c j h cZb g c k j c j k c kZb c gZb c j i c j j cZb k c!dFc c#dDc c$dHc c%dJc c&dLc c(dNc c)dPc c*dRc c+dTc c-dVc c:dXc c;dZc c/d2c c=d4c c>d6c c?d8c c@d0c c[d#c c]d%c c^d(c c_d*c c,d-c c.d;c c{d=c c|d?c c}d[c c~d^c c`d,c cae{c cbe}c cce`c cAc m cde`c cbeUd cee{c c`dTd cfe^c c}dSd cge?c c{dRd che;c c,dQd cie*c c^dPd cje%c c[dOd cke0c c?dNd cle6c c=dMd cme2c c;dLd cneXc c-dKd coeTc c*dJd cpePc c(dId cqeLc c%dHd creHc c#dGd cseFc c!dFd cteDc c$dEd cueJc c&dDd cveNc c)dCd cweRc c+dBd c jZb cxeVc c:dAd cyeZc c/dzd cze4c c>dyd cAe8c c@dxd cBe#c c]drd cCe(c cDe-c cEe=c cFe[c cGe,c cHe}c c1b m cHeUd cGeTd cFeSd cEeRd cDeQd cCePd cBeOd cAeNd czeMd cyeLd cxeKd cweJd cveId cueHd cteGd cseFd creEd cqeDd cpeCd coeBd cneAd cmezd cleyd ckexd cjerd cieqd chesd cgetd cfeud ceevd cdewd ccewd caevd c~dud c|dtd c.dsd c_dqd c","facets":"2 a b c c b d e c f e a c b g d b h g b i j j k b b l i k m b b n l m o b b p n o q b b r p q s b b t r s u b b v t u w b b x v w y b b z x y A b b B z A C b b D B C E b b F D E G b b H F G I b b J H I K b b L J K M b b N L M O b O P b P Q b Q R b R S b S T b T U b V W U X W V Y W X Z W Y 1 W Z U W b 2 3 1 4 3 2 5 3 4 6 3 5 1 3 W 7 a 8 9 a 7 0 a 9 ! a 0 # a ! $ a # b a N % a $ & a % ( a & ) a ( * a ) + a * - a + : a - ; a : / a ; = a / > a = ? a > @ a ? [ a @ ] a [ ^ a ] _ a ^ , a _ . a , { a . | a { } a | ~ a } ` a ~ab a `bb aabcb abbdb acbeb adbfb aeb N afbgbhb 6ibhbgbjbhbibkbhbjblbhbkbmbhblbnbhbmbobhbnbpbhbobqbhbpbrbhbqbsbhbrbtbhbsbubhbtbvbhbubwbhbvb 6hb 3 Wxb bhbyb 3ybzb 3AbBbwbCbBbAbDbBbCbEbBbDbFbBbEbGbBbFbHbBbGbIbBbHbJbBbIbKbBbJbLbBbKbMbBbLbNbBbMbObBbNbPbBbObQbBbPbwbBbhbzbRbxbxbRbSbTbUbQbVbUbTbWbUbVbXbUbWbBbUbYbQbUbBbXbZbUb1bZbXb2bZb1b3bZb2b4bZb3b 8Zb4b aZb 8Ub5bYbRb6b7b6b8b7bYb9bybyb9bzb5b9bYb6b9b0bzb9bRbRb9b6b!b#b5b5b#b9b$b hSbSb hxbxb h b0b%b&b9b%b0b8b(b7b8b)b(b(b*b7b8b+b)b*b-b7b8b:b+b-b;b7b8b/b:b7b=b$b;b=b7b8b>b/b=b?b$b8b@b>b?b[b$b8b]b@b[b^b$b8b_b]b^b,b$b8b.b_b,b{b$b$b{b h8b|b.b{b}b h8b~b|b}b`b h8bac~b`bbc h8bccacbcdc h8becccdcfc h8bgcecfchc h8bicgc&bic8bhcjc h&bkcicjclc h&bmckclcnc h&bocmcncpc h&bqcocpcrc h&bscqcrctc h&bucsctcvc h&bwcucvcxc h&bycwcxczc h&bAcyczcBc h&bCcAcBcDc h&bEcCcDcFc h&bGcEcFcHc h&bIcGcHcJc h&bKcIcJcLc h&bMcKcLcNc h%bOc&b&bOcMcNcPc h%bQcOcPcRc h%bScQcRcTc h%bUcScTcVc h%bWcUcXcWc%bVcYc hXcZcWcYc1c hXc2cZc1c3c hXc4c2c3c5c hXc6c4c5c7c hXc8c6c7c9c h9c0c h0c!c h!c#c h#c$c h$c%c h%c&c hXc e8c(c e&c)c e(c*c e)c+c e*c-c e+c:c e-c;c e:c/c e;c=c e/c>c e=c?c e>c&c e h@c e?c[c e@c]c e[c^c e]c_c e^c,c e_c.c e,c{c e.c|c e{c}c e|c~c e}c`c e~cad e`cbd eadcd ebddd ecded eddfd eedgd efdhd egdid ehdjd eidkd ejdld ekdmd eldnd emd8c end a eZbZb e!b!b e#b#b eXcod dpdqdpd drd dodsdqd dtd drdudsd dvd dtdwdud dxd dvdydwd dzd dxdAdyd dBd dzdCdAd dDd dBdEdCd dFd dDdGdEd dHd dFdIdGd dJd dHdKdId dLd dJdMdKd dNd dLdOdMd dPd dNdQdOd dRd dPdSdQd dTd dRdUdSd dVdUd dWdVd dXdWd dYdXd dZdYd d1dZd d2d3d1d2d4d3d2d5d4d2d6d5d2d7d6d2d1d d8d9d7d8d0d9d8d!d0d8d#d!d8d7d2d c$d%d c&d$d c(d&d c)d(d c*d)d c+d*d c dTd c-d+d c:d-d c;d:d c/d;d c=d/d c>d=d c?d>d c@d?d c[d@d c]d[d c^d]d c_d^d c,d_d c.d,d c{d.d c|d{d c}d|d c~d}d c`d~d cae`d cbeae ccebe cdece ceede cfeee cgefe chege ciehe cjeie ckeje cleke cTdlemene#dmeoenemepeoemeqepemereqemeseremetesemeuetemeveuemewevemexewemeyexemezeyemeAezemeBeAemeCeBeme#d8dDe2d dEeme8dFeEe8dGeHeCeGeIeHeGeJeIeGeKeJeGeLeKeGeMeLeGeNeMeGeOeNeGePeOeGeQePeGeReQeGeSeReGeTeSeGeUeTeGeVeUeGeWeVeGeCemeXeFeDeXeDeYeZe1eWeZe2e1eZe3e2eZe4e3eZeGe5eZeWeGe6e4eZe6e7e4e6e8e7e6e9e8e6e0e9e6e%d0e6e c%d!eZe5e#eXe$e%e#e$e&e5eEe&eEeFe&e!e5e&e#e(e&eFeXe&eXe#e)e*e!e)e!e&e g+eYe gYeDe gDe d-e(e:e-e&e(e;e%e$e/e%e;e=e;e$e>e%e/e?e=e$e@e%e>e[e?e$e]e%e@e^e$e+e^e[e$e_e%e]e,e^e+e.e%e_e{e,e+e|e%e.e}e{e+e~e%e|e`e}e+eaf%e~ebf`e+ebf+e gcf%eafdfbf gef%ecfffdf ggf%eefhfff gif%egfjfhf gkf%eiflfjf gmf%ekfnflf gof%emfof:e%epfnf gqf:eofrfpf gsf:eqftfrf guf:esfvftf gwf:eufxfvf gyf:ewfzfxf gAf:eyfBfzf gCf:eAfDfBf gEf:eCfFfDf gGf:eEfHfFf gIf:eGfJfHf gKf:eIfLfJf gMf:eKfNfLf gOf:eMfPfNf gQf:eOfRfPf gSf:eQfTfRf gUf-e:eUf:eSfVfTf gWf-eUfXfVf gYf-eWfZfXf g1f-eYf2fZf g3f-e1f3f4f-e5f2f g6f4f3f7f5f g8f4f6f9f7f g0f4f8f!f9f g#f4f0f$f!f g%f4f#f&f$f g(f&f g)f(f g*f)f g+f*f g-f+f g:f-f g f4f%f f;f:f f/f;f f=f/f f>f=f f?f>f f@f?f f[f@f f]f[f f^f]f f_f^f f,f_f f:f g f.f,f f{f.f f|f{f f}f|f f~f}f f`f~f fag`f fbgag fcgbg fdgcg fegdg ffgeg fggfg fhggg fighg fjgig fkgjg flgkg fmglg fngmg fogng fpgog fqgpg frgqg fsgrg ftgsg f%ftg f c6e f6e*e f*e)e f)e4f h e g g e f8d2d 3 32d WFe8dzbzb8d 32dDe W WDexbDeFexbxbFezbXeYeRbRbYeSb$eXe7b7bXeRbYe+eSbSb+e$b+e$e$b$b$e7bAbwbCeAbCeHeCbHeIeCbIeJeCbAbHeDbCbJeEbJeKeEbKeLeEbDbJeFbLeMeFbEbLeGbFbMeHbMeNeHbGbMeIbNeOeIbOePeIbHbNeJbIbPeKbPeQeKbJbPeLbKbQeLbQeReMbLbReMbReSeNbMbSeNbSeTeObNbTeObTeUePbUeVePbObUeQbVeWeQbPbVeTbWe1eTbQbWeVb1e2eVbTb1eWb2e3eWbVb2eXb3e4eXb4e7eXbWb3e1bXb7e2b7e8e2b8e9e2b1b7e3b2b9e4b9e0e4b0e%d4b3b9e 84b%d 7%d$d 7 8%d 9$d&d 9&d(d 9 7$d 0(d)d 0 9(d ! 0)d #)d*d #*d+d # !)d $ #+d %+d-d %-d:d % $+d & %:d (:d;d (;d/d ( &:d ) (/d * )/d */d=d +=d>d + *=d - +>d ->d?d : -?d :?d@d ; :@d ;@d[d ;[d]d / ;]d = /]d =]d^d > =^d >^d_d ? >_d ?_d,d @ ?,d @,d.d [ @.d [.d{d ] [{d ]{d|d ^ ]|d ^|d}d _ ^}d _}d~d ,~d`d , _~d .`dae . ,`d {aebe { .ae |bece | {be }cede } |ce ~deee ~ }de `eefe ` ~eeabfegeab `febbgehebbabgecbheiecbbbhedbiejedbcbieebjekeebdbjefbebkefbkele Nfble NleTd L NTd LTdRd J LRd JRdPd H JPd HPdNd F HNd FNdLd D FLd DLdJd B DJd BJdHd z BHd zHdFd x zFd xFdDd v xDd vDdBd t vBd tBdzd r tzd rzdxd p rxd pxdvd n pvd nvdtd l ntd ltdrd i lrd irdod j iod jodpd k jpd kpdqd m kqd mqdsd o msd osdud qudwd q oud swdyd s qwd uydAd u syd wAdCd w uAd yCdEd y wCd A yEd AEdGd C AGd CGdId E CId EIdKd G EKd GKdMd I GMd IMdOd K IOd KOdQd KQdSd M KSd O MSd OSdUd P OUd PUdVd Q PVd QVdWd R QWd RWdXd SYdZd S RXd SXdYd T SZd UZd1d U TZd V1d3d V U1d X3d4d X4d5d X V3d Y X5d Z5d6d Z Y5d 16d7d 1 Z6d 27d9d 29d0d 2 17d 4 20d 50d!d 5!d#d 5 40d 6 5#dgb#dnegb 6#dibgbneibneoejbiboejboepekbjbpekbpeqelbkbqelbqerembresemblbrenbsetenbmbseobteueobnbtepbuevepbobueqbveweqbpbverbwexerbqbwesbxeyesbrbxetbyezetbsbyeubzeAeubtbzevbAeBevbubAewbBeCewbvbBeGemeBbBbmehb5eGeYbYbGeBbmeEehbhbEeybEe5eybyb5eYbZe!e5bZe5bUb!e*e!b!e!b5b6eZeUb6eUbZb*e6eZb*eZb!b:e(e0b:e0b&b(e#e6b(e6b0b#e%e8b#e8b6b%e:e&b%e&b8b(c&c:f(c:f;f)c;f/f)c/f=f)c(c;f*c)c=f+c=f>f+c>f?f+c*c=f-c?f@f-c+c?f:c-c@f;c@f[f;c:c@f/c[f]f/c]f^f/c;c[f=c/c^f>c^f_f>c=c^f?c>c_f?c_f,f@c?c,f@c,f.f[c@c.f[c.f{f]c[c{f]c{f|f^c|f}f^c]c|f_c}f~f_c^c}f,c~f`f,c_c~f.c`fag.c,c`f{cagbg{c.cag|cbgcg|ccgdg|c{cbg}c|cdg~cdgeg~cegfg~c}cdg`c~cfgadfgggadgghgad`cfgbdadhgcdhgigcdbdhgddigjgddjgkgddcdigedkglgedddkgfdedlggdlgmggdmgnggdfdlghdgdngidngogidogpgidhdngjdidpgkdpgqgkdqgrgkdjdpgldkdrgmdldrgmdrgsgndsgtgndmdsg8cndtg8ctg%f6c8c%f6c%f#f4c6c#f4c#f0f4c0f8f2c4c8fZc2c8fZc8f6fWcZc6fWc6f3fUcWc3fUc3f1fScUc1fSc1fYfQcScYfQcYfWfOcQcWfOcWfUfMcOcUfMcUfSfKcMcSfKcSfQfIcQfOfIcKcQfGcOfMfGcIcOfEcMfKfEcGcMfCcKfIfCcEcKfAcIfGfAcCcIfycGfEfycAcGfwcEfCfwcycEfucCfAfucwcCfscAfyfscucAfqcyfwfqcscyfocwfufocqcwfmcufsfmcocufkcmcsfkcsfqfickcqficqfofgcicofgcofmfecgcmfecmfkfcceckfcckfifacccifacifgf~bacgf~bgfef|b~bef|befcf.b|bcf.bcfaf_b.baf_baf~e]b_b~e]b~e|e@b]b|e@b|e.e>b@b.e>b.e_e/b>b_e/b_e]e:b/b]e:b]e@e+b:b@e+b@e>e)b+b>e)b>e/e(b)b/e(b/e;e*b(b;e*b;e=e-b*b=e-b=e?e;b-b?e;b?e[e=b[e^e=b;b[e?b^e,e?b=b^e[b,e{e[b?b,e^b{e}e^b[b{e,b}e`e,b^b}e{b,b`e{b`ebf}b{bbf}bbfdf`b}bdf`bdfffbc`bffbcffhfdcbchfdchfjffcdcjffcjflffclfnfhcfcnfjchcnfjcnfpflcjcpflcpfrfnclcrfncrftfpcnctfpctfvfrcxfzfrcpcvfrcvfxftcrczfvczfBfvctczfxcBfDfxcvcBfzcDfFfzcFfHfzcxcDfBczcHfDcHfJfDcBcHfFcJfLfFcDcJfHcLfNfHcNfPfHcFcLfJcHcPfLcPfRfLcRfTfLcJcPfNcLcTfPcTfVfPcNcTfRcPcVfRcVfXfTcRcXfTcXfZfVcTcZfVcZf2fYcVc2fYc2f5f1c5f7f1cYc5f3c7f9f3c1c7f5c9f!f5c3c9f7c!f$f7c5c!f9c$f&f9c7c$f0c&f(f0c9c&f!c(f)f!c0c(f#c)f*f#c!c)f$c*f+f$c#c*f%c+f-f%c$c+f&c-f:f&c%c-f9b-e%b&e-e9b-e4fXc-eXc%b)e&e9b)e9b#bXc)e#b4f)eXc","wires":["1abcabdaedaecabc","1aecaedfedfecaec","1fbcfbdabdabcfbc","1aedfedfbdabdaed","1ghdhhdhidgidghd","1jhdkhdkidjidjhd","2 l m d n o d p q d r s d t u d v w d x y d z A d B C d D E d F G d H I d J K d L M d N O d P Q d R S d T U d V W d X Y d Z 1 d 2 3 d 4 5 d 6 7 d 8 9 d 0 ! d # $ d % & d ( ) d * + d - : d ; / d = > d ? / d @ : d [ + d ] ) d ^ & d _ $ d , ! d . 9 d { 7 d | 5 d } 3 d ~ 1 d ` Y dab W dbb U dcb S ddb Q deb O dfb M dgb K dhb I dib G djb E dkb C dlb A dmb y dnb w dob u dpb s dqb q drb o dsb m drbtb dqbub dpbvb dobwb dnbxb dmbyb dlbzb dkbAb djbBb dibCb dhbDb dgbEb dfbFb debGb ddbHb dcbIb dbbJb dabKb d `Lb d ~Mb d }Nb d |Ob d {Pb d .Qb d ,Rb d _Sb d ^Tb d ]Ub d [Vb d @Wb d ?Xb d =Yb d ;Xb d -Wb d *Vb d (Ub d %Tb d #Sb d 0Rb d 8Qb d 6Pb d 4Ob d 2Nb d ZMb d XLb d VKb d TJb d RIb d PHb d NGb d LFb d JEb d HDb d FCb d DBb d BAb d zzb d xyb d vxb d twb d rvb d pub d ntb d l m d","1hkdikdigdhgdhkd","2 g j d gZb d hZb d h j d g j d","2 j g dZb g dZb k d j k d j g d","21b m d2b o d3b q d4b s d5b u d6b w d7b y d8b A d9b C d0b E d!b G d#b I d$b K d%b M d&b O d(b Q d)b S d*b U d+b W d-b Y d:b 1 d;b 3 d/b 5 d=b 7 d>b 9 d?b ! d@b $ d[b & d]b ) d^b + d_b : d,b / d.b > d{b / d|b : d}b + d~b ) d`b & dac $ dbc ! dcc 9 ddc 7 dec 5 dfc 3 dgc 1 dhc Y dic W djc U dkc S dlc Q dmc O dnc M doc K dpc I dqc G drc E dsc C dtc A duc y dvc w dwc u dxc s dyc q dzc o dAc m dzctb dycub dxcvb dwcwb dvcxb ducyb dtczb dscAb drcBb dqcCb dpcDb docEb dncFb dmcGb dlcHb dkcIb djcJb dicKb dhcLb dgcMb dfcNb decOb ddcPb dccQb dbcRb dacSb d`bTb d~bUb d}bVb d|bWb d{bXb d.bYb d,bXb d_bWb d^bVb d]bUb d[bTb d@bSb d?bRb d>bQb d=bPb d/bOb d;bNb d:bMb d-bLb d+bKb d*bJb d)bIb d(bHb d&bGb d%bFb d$bEb d#bDb d!bCb d0bBb d9bAb d8bzb d7byb d6bxb d5bwb d4bvb d3bub d2btb d1b m d","2 j j d jZb d kZb d k j d j j d","1fecaecabcfbcfec","1hhcghcgichichhc","1khcjhcjickickhc","2 l m c ntb c pub c rvb c twb c vxb c xyb c zzb c BAb c DBb c FCb c HDb c JEb c LFb c NGb c PHb c RIb c TJb c VKb c XLb c ZMb c 2Nb c 4Ob c 6Pb c 8Qb c 0Rb c #Sb c %Tb c (Ub c *Vb c -Wb c ;Xb c =Yb c ?Xb c @Wb c [Vb c ]Ub c ^Tb c _Sb c ,Rb c .Qb c {Pb c |Ob c }Nb c ~Mb c `Lb cabKb cbbJb ccbIb cdbHb cebGb cfbFb cgbEb chbDb cibCb cjbBb ckbAb clbzb cmbyb cnbxb cobwb cpbvb cqbub crbtb csb m crb o cqb q cpb s cob u cnb w cmb y clb A ckb C cjb E cib G chb I cgb K cfb M ceb O cdb Q ccb S cbb U cab W c ` Y c ~ 1 c } 3 c | 5 c { 7 c . 9 c , ! c _ $ c ^ & c ] ) c [ + c @ : c ? / c = > c ; / c - : c * + c ( ) c % & c # $ c 0 ! c 8 9 c 6 7 c 4 5 c 2 3 c Z 1 c X Y c V W c T U c R S c P Q c N O c L M c J K c H I c F G c D E c B C c z A c x y c v w c t u c r s c p q c n o c lBc c","1ikchkchgcigcikc","2 gZb c g j c h j c hZb c gZb c","2Zb g c j g c j k cZb k cZb g c","21b m c2btb c3bub c4bvb c5bwb c6bxb c7byb c8bzb c9bAb c0bBb c!bCb c#bDb c$bEb c%bFb c&bGb c(bHb c)bIb c*bJb c+bKb c-bLb c:bMb c;bNb c/bOb c=bPb c>bQb c?bRb c@bSb c[bTb c]bUb c^bVb c_bWb c,bXb c.bYb c{bXb c|bWb c}bVb c~bUb c`bTb cacSb cbcRb cccQb cdcPb cecOb cfcNb cgcMb chcLb cicKb cjcJb ckcIb clcHb cmcGb cncFb cocEb cpcDb cqcCb crcBb cscAb ctczb cucyb cvcxb cwcwb cxcvb cycub czctb cAc m czc o cyc q cxc s cwc u cvc w cuc y ctc A csc C crc E cqc G cpc I coc K cnc M cmc O clc Q ckc S cjc U cic W chc Y cgc 1 cfc 3 cec 5 cdc 7 ccc 9 cbc ! cac $ c`b & c~b ) c}b + c|b : c{b / c.b > c,b / c_b : c^b + c]b ) c[b & c@b $ c?b ! c>b 9 c=b 7 c/b 5 c;b 3 c:b 1 c-b Y c+b W c*b U c)b S c(b Q c&b O c%b M c$b K c#b I c!b G c0b E c9b C c8b A c7b y c6b w c5b u c4b s c3b q c2b o c1bBc c","2 jZb c j j c k j c kZb c jZb c","1fecfedfbdfbcfec","1hhchichidhhdhhc","1ghchhchhdghdghc","1hicgicgidhidhic","1gicghcghdgidgic","1khckickidkhdkhc","1jhckhckhdjhdjhc","1kicjicjidkidkic","1jicjhcjhdjidjic","2 l m d n o d p q d r s d t u d v w d x y d z A d B C d D E d F G d H I d J K d L M d N O d P Q d R S d T U d V W d X Y d Z 1 d 2 3 d 4 5 d 6 7 d 8 9 d 0 ! d # $ d % & d ( ) d * + d - : d ; / d = > d ? / d @ : d [ + d ] ) d ^ & d _ $ d , ! d . 9 d { 7 d | 5 d } 3 d ~ 1 d ` Y dab W dbb U dcb S ddb Q deb O dfb M dgb K dhb I dib G djb E dkb C dlb A dmb y dnb w dob u dpb s dqb q drb o dsb m drbtb dqbub dpbvb dobwb dnbxb dmbyb dlbzb dkbAb djbBb dibCb dhbDb dgbEb dfbFb debGb ddbHb dcbIb dbbJb dabKb d `Lb d ~Mb d }Nb d |Ob d {Pb d .Qb d ,Rb d _Sb d ^Tb d ]Ub d [Vb d @Wb d ?Xb d =Yb d ;Xb d -Wb d *Vb d (Ub d %Tb d #Sb d 0Rb d 8Qb d 6Pb d 4Ob d 2Nb d ZMb d XLb d VKb d TJb d RIb d PHb d NGb d LFb d JEb d HDb d FCb d DBb d BAb d zzb d xyb d vxb d twb d rvb d pub d ntb d l m c l m c ntb c pub c rvb c twb c vxb c xyb c zzb c BAb c DBb c FCb c HDb c JEb c LFb c NGb c PHb c RIb c TJb c VKb c XLb c ZMb c 2Nb c 4Ob c 6Pb c 8Qb c 0Rb c #Sb c %Tb c (Ub c *Vb c -Wb c ;Xb c =Yb c ?Xb c @Wb c [Vb c ]Ub c ^Tb c _Sb c ,Rb c .Qb c {Pb c |Ob c }Nb c ~Mb c `Lb cabKb cbbJb ccbIb cdbHb cebGb cfbFb cgbEb chbDb cibCb cjbBb ckbAb clbzb cmbyb cnbxb cobwb cpbvb cqbub crbtb csb m crb o cqb q cpb s cob u cnb w cmb y clb A ckb C cjb E cib G chb I cgb K cfb M ceb O cdb Q ccb S cbb U cab W c ` Y c ~ 1 c } 3 c | 5 c { 7 c . 9 c , ! c _ $ c ^ & c ] ) c [ + c @ : c ? / c = > c ; / c - : c * + c ( ) c % & c # $ c 0 ! c 8 9 c 6 7 c 4 5 c 2 3 c Z 1 c X Y c V W c T U c R S c P Q c N O c L M c J K c H I c F G c D E c B C c z A c x y c v w c t u c r s c p q c n o c lBc c","1ikcigcigdikdikc","1hkcikcikdhkdhkc","1igchgchgdigdigc","1hgchkchkdhgdhgc","1hjcgjcgjdhjdhjc","2 g j c gZb c gZb d g j d g j c","2 hZb c h j c h j d hZb d hZb c","2 gZb c hZb c hZb d gZb d gZb c","2Zb k c j k c j k dZb k dZb k c","1jkcjgcjgdjkdjkc","2 j g cZb g cZb g d j g d j g c","2Zb g cZb k cZb k dZb g dZb g c","21b m d2b o d3b q d4b s d5b u d6b w d7b y d8b A d9b C d0b E d!b G d#b I d$b K d%b M d&b O d(b Q d)b S d*b U d+b W d-b Y d:b 1 d;b 3 d/b 5 d=b 7 d>b 9 d?b ! d@b $ d[b & d]b ) d^b + d_b : d,b / d.b > d{b / d|b : d}b + d~b ) d`b & dac $ dbc ! dcc 9 ddc 7 dec 5 dfc 3 dgc 1 dhc Y dic W djc U dkc S dlc Q dmc O dnc M doc K dpc I dqc G drc E dsc C dtc A duc y dvc w dwc u dxc s dyc q dzc o dAc m dzctb dycub dxcvb dwcwb dvcxb ducyb dtczb dscAb drcBb dqcCb dpcDb docEb dncFb dmcGb dlcHb dkcIb djcJb dicKb dhcLb dgcMb dfcNb decOb ddcPb dccQb dbcRb dacSb d`bTb d~bUb d}bVb d|bWb d{bXb d.bYb d,bXb d_bWb d^bVb d]bUb d[bTb d@bSb d?bRb d>bQb d=bPb d/bOb d;bNb d:bMb d-bLb d+bKb d*bJb d)bIb d(bHb d&bGb d%bFb d$bEb d#bDb d!bCb d0bBb d9bAb d8bzb d7byb d6bxb d5bwb d4bvb d3bub d2btb d1b m c1b m c2btb c3bub c4bvb c5bwb c6bxb c7byb c8bzb c9bAb c0bBb c!bCb c#bDb c$bEb c%bFb c&bGb c(bHb c)bIb c*bJb c+bKb c-bLb c:bMb c;bNb c/bOb c=bPb c>bQb c?bRb c@bSb c[bTb c]bUb c^bVb c_bWb c,bXb c.bYb c{bXb c|bWb c}bVb c~bUb c`bTb cacSb cbcRb cccQb cdcPb cecOb cfcNb cgcMb chcLb cicKb cjcJb ckcIb clcHb cmcGb cncFb cocEb cpcDb cqcCb crcBb cscAb ctczb cucyb cvcxb cwcwb cxcvb cycub czctb cAc m czc o cyc q cxc s cwc u cvc w cuc y ctc A csc C crc E cqc G cpc I coc K cnc M cmc O clc Q ckc S cjc U cic W chc Y cgc 1 cfc 3 cec 5 cdc 7 ccc 9 cbc ! cac $ c`b & c~b ) c}b + c|b : c{b / c.b > c,b / c_b : c^b + c]b ) c[b & c@b $ c?b ! c>b 9 c=b 7 c/b 5 c;b 3 c:b 1 c-b Y c+b W c*b U c)b S c(b Q c&b O c%b M c$b K c#b I c!b G c0b E c9b C c8b A c7b y c6b w c5b u c4b s c3b q c2b o c1bBc c","1kjcjjcjjdkjdkjc","2 j j c jZb c jZb d j j d j j c","2 kZb c k j c k j d kZb d kZb c","2 jZb c kZb c kZb d jZb d jZb c"],"faceColors":[],"facesToFacets":["1ab","1cd","1ef","2 g h i j k l m n o p q r s t u v w x y z A B C D E F G H I J K L M N O P Q R S T U V W X Y Z 1 2 3 4 5 6 7 8 9 0 ! # $ % & ( ) * + - : ; / = > ? @ [ ] ^ _ , . { | } ~ `abbbcbdbebfbgbhbibjbkblbmbnbobpbqbrbsbtbubvbwbxbybzbAbBbCbDbEbFbGbHbIbJbKbLbMbNbObPbQbRbSbTbUbVbWbXbYbZb1b2b3b4b5b6b7b8b9b0b!b#b$b%b&b(b)b*b+b-b:b;b/b=b>b?b@b[b]b^b_b,b.b{b|b}b~b`bacbcccdcecfcgchcicjckclcmcncocpcqcrcsctcucvcwcxcyczcAcBcCcDcEcFcGcHcIcJcKcLcMcNcOcPcQcRcScTcUcVcWcXcYcZc1c2c3c4c5c6c7c8c9c0c!c#c$c%c&c(c)c*c+c-c:c;c/c=c>c?c@c[c]c^c_c,c.c{c|c}c~c`cadbdcdddedfdgdhdidjdkdldmdndodpdqdrdsdtdudvdwdxdydzdAdBdCdDd","2EdFdGdHdIdJdKdLdMdNdOdPdQdRdSdTdUdVdWdXdYdZd1d2d3d4d5d6d7d8d9d0d!d#d$d%d&d(d)d*d+d-d:d;d/d=d>d?d@d[d]d^d_d,d.d{d|d}d~d`daebecedeeefegeheiejekelemeneoepeqereseteuevewexeyezeAeBeCeDeEeFeGeHeIeJeKeLeMeNeOePeQeReSeTeUeVeWeXeYeZe1e2e3e4e5e6e7e8e9e0e!e#e$e%e&e(e)e*e+e-e:e;e/e=e>e?e@e[e]e^e_e,e.e{e|e}e~e`eafbfcfdfefffgfhfifjfkflfmfnfofpfqfrfsftfufvfwfxfyfzfAfBfCfDfEfFfGfHfIfJfKfLfMfNfOfPfQfRfSfTfUfVfWfXfYfZf1f2f3f4f5f6f7f8f9f0f!f#f$f%f&f(f)f*f+f-f:f;f/f=f>f?f@f[f]f^f_f,f.f{f|f}f~f`fagbgcgdgegfggghgigjgkglgmgngogpgqgrgsgtgugvgwgxgygzgAgBgCgDgEgFgGgHgIgJgKgLgMgNgOgPgQgRgSgTgUgVgWgXgYgZg1g2g","23g4g","25g6g","27g8g","29g0g","2!g#g","2$g%g","2&g(g","2)g*g","2+g-g","2:g;g/g=g>g?g@g[g]g^g_g,g.g{g|g}g~g`gahbhchdhehfhghhhihjhkhlhmhnhohphqhrhshthuhvhwhxhyhzhAhBhChDhEhFhGhHhIhJhKhLhMhNhOhPhQhRhShThUhVhWhXhYhZh1h2h3h4h5h6h7h8h9h0h!h#h$h%h&h(h)h*h+h-h:h;h/h=h>h?h@h[h]h^h_h,h.h{h|h}h~h`haibicidieifigihiiijikiliminioipiqirisitiuiviwixiyiziAiBiCiDiEiFiGiHiIiJiKiLiMiNiOiPiQiRiSiTiUiViWiXiYiZi1i2i3i4i5i6i7i8i9i0i!i#i$i%i&i(i)i*i+i-i:i;i/i=i>i?i@i[i]i^i_i,i.i{i|i}i~i`iajbjcjdjejfjgjhjijjjkjljmjnjojpjqjrjsjtjujvjwjxjyjzjAjBjCjDjEjFjGjHjIjJjKjLjMjNjOjPjQjRjSjTjUjVjWjXjYjZj1j2j","23j4j","25j6j","27j8j","29j0j","2!j#j","2$j%j","2&j(j","2)j*j","2+j-j","2:j;j","2/j=j","2>j?j","2@j[j]j^j_j,j.j{j|j}j~j`jakbkckdkekfkgkhkikjkkklkmknkokpkqkrksktkukvkwkxkykzkAkBkCkDkEkFkGkHkIkJkKkLkMkNkOkPkQkRkSkTkUkVkWkXkYkZk1k2k3k4k5k6k7k8k9k0k!k#k$k%k&k(k)k*k+k-k:k;k/k=k>k?k@k[k]k^k_k,k.k{k|k}k~k`kalblcldlelflglhliljlklllmlnlolplqlrlsltlulvlwlxlylzlAlBlClDlElFlGlHlIlJlKlLlMlNlOlPlQlRlSlTlUlVlWlXlYlZl1l2l3l4l5l6l7l8l9l0l!l#l$l%l&l(l)l*l+l-l:l;l/l=l>l?l@l[l]l^l_l,l.l{l|l}l~l`lambmcmdmemfmgmhmimjmkmlmmmnmompmqmrmsmtmumvmwmxmymzmAmBmCmDmEmFmGmHmImJmKmLmMmNmOmPmQmRmSmTmUmVmWmXmYmZm1m2m3m4m5m6m7m8m","29m0m","2!m#m","2$m%m","2&m(m"],"floats":"-MNrO[Jvf0Uv(Lu9KsCeD(KvV5Uv~@yi,_Grpb|t94UvpuQ;q^Fc#LLv:>Tv~@yiW%;okW|teGpz4vUNA(ER$?Z[J:bCPE)yF@8mA[Zqa!uNZnty&aijUVAB2)ybf+v>=b-WQYkVa72canOUuJ|6rP1NGsGROs-8wl-QeNr)Z[Om`c1q9:8!tXlZ*#Ci4pSO]czb9Myz*E~*x)&2&4ldC}08$~)59a^whX@Rqr@8T9o#nK!.4=Rkk{7qH,p#1u$/8:Kk&zBVaCzb.)i$+A[@pW19DRlev_B&FR4)(}JN7G[St8V&MIc,ybb)]d`kw6!q(@r$*:F_aLUjIC]28>zb~8EJoJ/IAp-;QPne%W1A^*|GCg=_O`]T/Oqu27VCtph)G?tnC2,qk!Lv^>TvEP8j{#,q!;bC)1Z@0SNW+FOUnIV77#KB-&Bb{H;DI.8jC)ar=m-Q7)/=!,OXj2sH}RgRUD1OEcCb$.`!%NIie(hrv!o#urxY)A~X[t!8|Q;G_!GVrYCbgQd#y97j@BlrbKc,=/+5zoSY(v!8&B)WGy,2wZCbS?2ZvH`m|Llr]8VC^N-{Py~YA3{tKEgYdIb8eJ=u&nqb2$W5kIV7KyamMO=p|(NUEj(0T%[6c&fI&qxb2~m!|RgRq[jloMHq=i!8.k/_`2]K)_nV9/Abp{Oy|Q;G6}rn(zHr/yC&8V-EdgpX_A;2pGEbP*!L(B)W99Mm]xJrT@1AnV>3@R$.q(~2Z(HbXWKvO5Uv~@yi{fTYW_T&Ou0CHg=_k`.2,1[d&&4GQC)WXTUla[RY}:l;%CkU:}JNBx82Li>dapK=0R;Gd9QlP*}X;t+A.]|L%a^w6e0OHR:d>e8I0SgR.A3i+m}W,`k;TYx5wP1NhI(H}P%d6Gy)=IV7=Tfj.Z{VlPk;?a`/9vUNRaTu$/Vd7oj8ljaDf;>i2yKT3A?8Y6EJD45L]lu(a+OdNqa^:&9R=-fj1=ISHYi;i)i$>)vXEPA9e+HdQ50#rtD7-=clUQ?RL93U3NyzARgw9wCVcsEdjRPZi3.+U6Vk`3FRkK3U1/v>?HhG?UcV#fEd9Qd,~+pNe/AiA!ERq5~tf,Jv-}zUW:aV/zCbIIt,xsXN[ERX7SsH3=[?#Rrl2VHqGS/NAeHWn>0lb?hrq)D:gljKvJYO,@Ab)>7!};.,wJTOVbCb-w{41MYx7&QYG,f2=5Z?~@yikJHrREg2U}{%wA4m8-arL*!LY&eUQ&)2S*tbK5xP(.FZDN+2(YCbp.+@KX,QnI{W/Qg2Fn-4_0QlqU=pLXsH>-SC&l9l7HlrL;_X(qV%b$GBNIEbgNA+Oep=lrBB/QBbwxs4]R]>N*SYq1;Nq`?@iNNi@HJrYEg26^*QcP$mj(,qf}Oyt=C5(n~2y$mb:GJW)/GY@R~2KZCbS{OL=,!N@3,VxiY[Kbn=qBXmf3*qlan!e+OLP3KT^U1A_)4#|-3;~=zbSqL^B0HmiX!q?L$MGX_L%s@S{Z|t0:CY&kL9LBzb-lE^XXIi%X4q9727S~H7%}x@|R]>C*[m{9}20%ne4xMH60gE&x-4$9=%0vyR5jojJ342926d)ZaOp/1{j.[?E`%,$`5zZ`Ym{P3ODLkd]cFHN@60$y%,W$oxNX,Q!gRiFJLBCbjcS-TULaO@S+sX;~/.=,!NOo@R.9X[*5Dxh`02#czbcWZLd>8m-a1q-q!$dBH8v,FR`mOU=oh!WMhVR)yb58C6a4>io@Zqm1LwiB_wF#ER*R>80EHybNB0$ov908HdX@z*kCu8fcGj?7HSu93U^4ZLNJh+$`CV/5Od.`Kv]I6PXKWj=vGR;%$[V5hKSd4Zt!o(BlEd}7L>YYi[%OXjxbJTMs>8-(C6?YR$R2cV[FSdX&WC*O;$HrTjN(ERq|HHo,xFGZ:v+!L]O;0dowj8H!t1dSbm;oNWK5&[fGs4TRP!V,QB+@)d{L|xwmi%?y~lc)OXseou]F{4#O$3US7O=Y:dO>eD4dv[1GqkFn~X>6T&mH9Mc/.,xU72EQ[dxU:Q`AIyvQ,kwmSY`a]8ElZRTep=S_.2}3[d}kh{X6,(p;tn"},{"name":"\u0421\u0442\u0435\u043d\u043a\u0430 \u0431\u043e\u0439\u043a\u0430 \u0442\u0438\u043f 1","color":"#cccccc","opacity":1.0,"verts":"1abcabdebcebdefdafdagcegceghagheihaiheicaicaaceacaadeadeedaedeejaejeajaajaakeakeekaekaeleelealaalaameamaimeimefjafjabmagmebmegmablebleflaflefkebkabkafkabjebjegnagneinain","facets":"1abccbdedbebfgahhachijhjgikliljkmnknlonppnmqprqoprsqqstsuttuvuwvvwxywzyxwzAyyABACBADCDECCEFGFHHFEIGJJGHKefKfLMNOONPQORQMORSTRTQTUXSUTUVWUWXYWZZWVZKLZLY1P22PNJ3II34314412FGINI4N42yBCyCFQNMqtvqvxWyFWFIWINWNQXQTXWQnoqYxyYyWbxYgqxgnqgxbjlnjngfYLfbYagbROP3P1JP3VUSVSREJHdeKdKZzZVzRPzVRzPJzJEAEDAzEwZzhcdmihmdZmhdmZwmwrswusrwkimpmr","wires":["1abcabdebdebcabc","1afdefdebdabdafd","1agcabcebcegcagc","1agcegceghaghagc","1aghegheihaihagh","1aiheiheicaicaih","1aacaiceiceacaac","1aadaaceaceadaad","1aedeedeadaadaed","1aejeejeedaedaej","1aajeajeejaejaaj","1aakaajeajeakaak","1aekeekeakaakaek","1aeleeleekaekael","1aalealeelaelaal","1aamaalealeamaam","1aimaameameimaim","1afjefjefdafdafj","1abmagmegmebmabm","1ablabmebmeblabl","1ablebleflaflabl","1afleflefkafkafl","1afkefkebkabkafk","1abjabkebkebjabj","1abjebjefjafjabj","1agmegmegnagnagm","1aioeineimaimain","1agoegoeinainagn","1afjafdabdabcagcaghaihaicaacaadaedaejaajaakaekaelaalaamaimainagnagmabmablaflafkabkabjafj","1ebcebdefdefjebjebkefkefleblebmegmegoeineimeamealeeleekeakeajeejeedeadeaceiceiheghegcebc"],"faceColors":[],"facesToFacets":[],"floats":"F%3Epb|tY5Uv~@yic)OX[;euY>Tv~@yi,_GrNIsuB}Tvy5Uv~@yi3{sK/PduX,Tv+4Uv`9UvRaTu"},{"name":"\u0421\u0442\u0435\u043d\u043a\u0430 \u0431\u043e\u0439\u043a\u0430 \u0442\u0438\u043f 2","color":"#cccccc","opacity":1.0,"verts":"1aecabcdbcdecaefabfdbfdefdbgdegaegabgabhaehdehdbhdbideiabiaeiaejabjdejdbjderdbrbbfbbgbefbegeegebgeefebfeecebcbecbbcberbbrtertbrtectbcsecsbcebhebjbejeejbbjeeiebibeibbibbhbeheehsersbrdeudbuseusbusbjsejtejtbjteutbubeubbu","facets":"1abcacdaebbefegfehgihjighjkiiklkmlknmnommopqprrporsqrtstussuvvuwvwxydcycz7yz7z8ABCCBDEDBEBFCGHCHAGIJGJHKLJKJIKMNKNLMOPMPNOQRORPSTRSRQ6EF6FUVWXYWVVZ1XZVZ23Z3143553256U5U4S78S8Tw9xx909!00!#$%&$&(!%##%$&)(()*+W--WY)+**+-qsvqvx$x0$0#$qxpq$lmpilpY(*Y*-3$(3YV3(Y13Vbfgcbg4p$4$3BipBp4TgiTcg8zc8cTF4UFB4ARTAiBATiLRAJAHJLANRLNPR2ZX2XW&W+&+)&2W52&DE6D65w%!w!9r&%r%wr5&twutrwIGCKICo5rjD5j5oQMKQKCOMQkonkjohCDhDjSQCSChdShd7Saheadhy7d","wires":["1abcdbcdecaecabc","1abfaefaecabcabf","1dbfdefaefabfdbf","1dbgdbfdefdegdbg","1abgaegdegdbgabg","1abhaehaegabgabh","1dbhdehaehabhdbh","1dbidbhdehdeidbi","1abiaeideidbiabi","1abjaejaeiabiabj","1dbjabjakjaljamjanjaojapjaqjaejdejdbj","1dbrderdecdbcdbr","1sbrserderdbrsbr","1bbfbbgbegbefbbf","1ebgeegbegbbgebg","1bbfbefeefebfbbf","1ebfeefeecebcebf","1ebceecbecbbcebc","1bbcbecberbbrbbc","1bbrbertertbrbbr","1tbrtertectbctbr","1sbctbctecsecsbc","1ebheeheegebgebh","1ebjbbjbejeejebj","1ebjeejeeiebiebj","1ebieeibeibbiebi","1bbhbbibeibehbbh","1bbhbeheehebhbbh","1sbcsecsersbrsbc","1dbudeudejdbjdbu","1sbuseudeudbusbu","1tbjsbjsejtejtbj","1sbjsejseusbusbj","1tbuteutejtbjtbu","1bbjbejbeubbubbj","1bbubeuteutbubbu","1ebhebgbbgbbfebfebcbbcbbrtbrtbcsbcsbrdbrdbcabcabfdbfdbgabgabhdbhdbiabiabjdbjdbusbusbjtbjtbubbubbjebjebibbibbhebh","1befbegeegeehbehbeieeieejbejbeuteutejsejseudeudejaejaeideidehaehaegdegdefaefaecdecdersersectecterberbeceeceefbef"],"faceColors":[],"facesToFacets":[],"floats":"+vmGpb|tY5Uv~@yiF%3E:g|tL5Uv~@yi;>/Qp`guS]Tvd0Uv~@yi,#2pD/_XzV;x)_3EvVf2MEw@=i(2d`rbW>TvHg/k9p36^wqui.Jv+4Uv}9Uv"},{"name":"\u0421\u0442\u0435\u043d\u043a\u0430 \u0431\u043e\u0439\u043a\u0430 \u0442\u0438\u043f 003","color":"#cccccc","opacity":1.0,"verts":"1aacabcbbcbacaadabdbadbbdbbebaeaaeabeaafabfbafbbfbbgbagaagabgaahabhbahbbhbapbbpqbprbdrberadraesaesbesadsbdsacsbcracrbcraprbptaptbptactbcqacqbcsafsbhrahrbhsahsagsbgragrbgrbfrafsbfqapbaubbuqauqbuqbhqahtahtbhtautburaurbu","facets":"1abcacdaebbefegffghihjjhgjkiiklkmllmnmonnopqprrporsqqstsuttuvvuwvwxydcycz8yz8zABCDDCEFECFCGDHIDIBHJKHKILMKLKJLNOLOMNPQNQOPRSPSQTUSTSRVFGVG7WXZYXWZ12Z2W1341425466436V7675T8ATAUw9xx909!00!#$%&$&(!%##%$&)(()*+X--XY)+**+-qtvqvx$x0$0#$qxpq$-(*Y(-ilninp4$(4p$4(Y2YW24Ycbfcfh5p4C57CipCp5UchGC7AzcAcUSUhBhiBiCBShMSBKMBKBIOQSOSM&X+&+)31Z3ZX3X&63&w%!w!9EFVEV6r&%r6&r%wswusrwo6rLJHLHDjDEjE6j6oRLDRDjkomkjoPNLPLRTjgTRjd8TdTgadgagey8d","wires":["1abcbbcbacaacabc","1abdaadaacabcabd","1bbdbadaadabdbbd","1bbebbdbadbaebbe","1abeaaebaebbeabe","1abfaafaaeabeabf","1bbfbafaafabfbbf","1bbgbbfbafbagbbg","1abgaagbagbbgabg","1abhaahaagabgabh","1bbhabhaihajhakhalhamhanhaohaahbahbbh","1bbpbapbacbbcbbp","1qbpqapbapbbpqbp","1rbdrberaeradrbd","1sbesaeraerbesbe","1rbdradsadsbdrbd","1sbdsadsacsbcsbd","1sbcsacracrbcsbc","1rbcracraprbprbc","1rbpraptaptbprbp","1tbptaptactbctbp","1qbctbctacqacqbc","1sbfsafsaesbesbf","1sbhrbhrahsahsbh","1sbhsahsagsbgsbh","1sbgsagragrbgsbg","1rbfrbgragrafrbf","1rbfrafsafsbfrbf","1qbcqacqapqbpqbc","1bbubaubahbbhbbu","1qbuqaubaubbuqbu","1tbhqbhqahtahtbh","1qbhqahqauqbuqbh","1tbutautahtbhtbu","1rbhrahraurburbh","1rburautautburbu","1sbfsberberbdsbdsbcrbcrbptbptbcqbcqbpbbpbbcabcabdbbdbbeabeabfbbfbbgabgabhbbhbbuqbuqbhtbhtburburbhsbhsbgrbgrbfsbf","1radraesaesafrafragsagsahrahrautautahqahqaubaubahaahaagbagbafaafaaebaebadaadaacbacbapqapqactactaprapracsacsadrad"],"faceColors":[],"facesToFacets":[],"floats":"+vmG7aeuX,Tv~4Uv~@yi3{sKUUkul|Tvf0Uvk$GOT^Fc9N,X)6JZq16i>p4Eobeu=K43[qL+QeM9k,Zb^wquZ?Jv`9Uv+vmG|{|tN~Tv}9Uv"},{"name":"\u0421\u0442\u0435\u043d\u043a\u0430 \u0431\u043e\u0439\u043a\u0430 \u0442\u0438\u043f 004","color":"#cccccc","opacity":1.0,"verts":"1abcabdbbcbbdaadbadaecbecbefaefbgfagfbgcagcahcbhcahdbhdbidaidbijaijbhjahjahkbhkbikaikbilailbhlahlahmbhmagmbgmbajaajabmaembbmbemablbblbalaalbakaakbbkabkabjbbjbenaenbgnagn","facets":"1abccbdedbfdegahhachijhjgikliljkmnknlonppnmqorroprsqqstsuttuvuwvvwxyxzzxwzAyyABACBBCDCEDDEFGFHHFEIGJJGHKfeKeLMNOONPQORQMORSTRTQSUVSVTUWXUXVYXZZXWYKLZKY1P22PNJ3II34314412IFGyBDyDFNI4N42tvxqtxQNMXINXFIXyFXNQVQTVXQnoqYxyYyXbYLbxYglngqxgnqgxbjlgebLagbPROWUSWSRWRPJP1J13dfKdKZEJHzPJzWPzJEAECAzEwZWwWzhcdhdZmhZmZwmwrswusrwkihkhmpmr","wires":["1abcabdbbdbbcabc","1aadbadbbdabdaad","1aecabcbbcbecaec","1aecbecbefaefaec","1aefbefbgfagfaef","1agfbgfbgcagcagf","1ahcagcbgcbhcahc","1ahdahcbhcbhdahd","1aidbidbhdahdaid","1aijbijbidaidaij","1ahjbhjbijaijahj","1ahkahjbhjbhkahk","1aikbikbhkahkaik","1ailbilbikaikail","1ahlbhlbilailahl","1ahmahlbhlbhmahm","1agmahmbhmbgmagm","1aajbajbadaadaaj","1abmaembembbmabm","1ablabmbbmbblabl","1ablbblbalaalabl","1aalbalbakaakaal","1aakbakbbkabkaak","1abjabkbbkbbjabj","1abjbbjbajaajabj","1aembembenaenaem","1agnbgnbgmagmagn","1aenbenbgnagnaen","1aajaadabdabcaecaefagfagcahcahdaidaijahjahkaikailahlahmagmagnaenaemabmablaalaakabkabjaaj","1bbcbbdbadbajbbjbbkbakbalbblbbmbembenbgnbgmbhmbhlbilbikbhkbhjbijbidbhdbhcbgcbgfbefbecbbc"],"faceColors":[],"facesToFacets":[],"floats":"6z$pZ?Jvf0Uvk$GO,G:di.Jv25Uv~@yiWU32q^FcXWKvy5Uv~@yi3{sK/PduX,Tv+4Uv}9Uv"}],"compressed":true,"base":"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890!#$%&()*+-:;/=>?@[]^_,.{|}~`","baseFloat":",.-0123456789"};
+
+            // Z is up for FreeCAD
+            THREE.Object3D.DefaultUp = new THREE.Vector3(0, 0, 1);
+
+            const defaultWireColor = new THREE.Color('rgb(0,0,0)');
+            const defaultWireLineWidth = 2; // in pixels
+
+            const raycasterObj = []; // list of obj that can mouseover highlight
+
+            const canvas = document.querySelector('#mainCanvas');
+
+            const scene = new THREE.Scene();
+
+            const renderer = new THREE.WebGLRenderer({
+                alpha: true,
+                antialias: true,
+                canvas: canvas
+            }); // Clear bg so we can set it with css
+            renderer.setClearColor(0x000000, 0);
+
+            let renderRequested = false;
+
+            // HemisphereLight gives different colors of light from the top
+            // and bottom simulating reflected light from the 'ground' and
+            // 'sky'
+            scene.add(new THREE.HemisphereLight(0xC7E8FF, 0xFFE3B3, 0.4));
+
+            const dLight1 = new THREE.DirectionalLight(0xffffff, 0.4);
+            dLight1.position.set(5, -2, 3);
+            scene.add(dLight1);
+            const dLight2 = new THREE.DirectionalLight(0xffffff, 0.4);
+            dLight2.position.set(-5, 2, 3);
+            scene.add(dLight2);
+
+            if (data.compressed) {
+                const base = data.base;
+                const baseFloat = data.baseFloat;
+
+                function baseDecode(input) {
+                    const baseCt = base.length;
+                    const output = [];
+                    const len = parseInt(input[0]); // num chars of each element
+                    for (let i = 1; i < input.length; i += len) {
+                        const str = input.substring(i, i + len).trim();
+                        let val = 0;
+                        for (let s = 0; s < str.length; s++) {
+                            const ind = base.indexOf(str[s]);
+                            val += ind * Math.pow(baseCt, s);
+                        }
+                        output.push(val);
+                    }
+                    return output;
+                }
+
+                function floatDecode(input) {
+                    const baseCt = base.length;
+                    const baseFloatCt = baseFloat.length;
+                    let numString = '';
+                    for (let i = 0; i < input.length; i += 4) {
+                        const b90chunk = input.substring(i, i + 4).trim();
+                        let quotient = 0;
+                        for (let s = 0; s < b90chunk.length; s++) {
+                            const ind = base.indexOf(b90chunk[s]);
+                            quotient += ind * Math.pow(baseCt, s);
+                        }
+                        let buffer = '';
+                        for (let s = 0; s < 7; s++) {
+                            buffer = baseFloat[quotient % baseFloatCt] + buffer;
+                            quotient = parseInt(quotient / baseFloatCt);
+                        }
+                        numString += buffer;
+                    }
+                    let trailingCommas = 0;
+                    for (let s = 1; s < 7; s++) {
+                        if (numString[numString.length - s] == baseFloat[0]) {
+                            trailingCommas++;
+                        }
+                    }
+                    numString = numString.substring(0, numString.length - trailingCommas);
+                    return numString;
+                }
+
+                // Decode from base90 and distribute the floats
+                for (const obj of data.objects) {
+                    obj.floats = JSON.parse('[' + floatDecode(obj.floats) + ']');
+                    obj.verts = baseDecode(obj.verts).map(x => obj.floats[x]);
+                    obj.facets = baseDecode(obj.facets);
+                    obj.wires = obj.wires.map(w => baseDecode(w).map(x => obj.floats[x]));
+                    obj.facesToFacets = obj.facesToFacets.map(x => baseDecode(x));
+                }
+            }
+
+            // Get bounds for global clipping
+            const globalMaxMin = [{min: null, max: null},
+                                  {min: null, max: null},
+                                  {min: null, max: null}];
+            for (const obj of data.objects) {
+                for (let v = 0; v < obj.verts.length; v++) {
+                    if (globalMaxMin[v % 3] === null
+                        || obj.verts[v] < globalMaxMin[v % 3].min) {
+                        globalMaxMin[v % 3].min = obj.verts[v];
+                    }
+                    if (globalMaxMin[v % 3] === null
+                        || obj.verts[v] > globalMaxMin[v % 3].max) {
+                        globalMaxMin[v % 3].max = obj.verts[v];
+                    }
+                }
+            }
+            let bigrange = 0;
+            // add a little extra
+            for (const i of globalMaxMin) {
+                const range = i.max - i.min;
+                if (range > bigrange) {
+                    bigrange = range;
+                }
+                i.min -= range * 0.01;
+                i.max += range * 0.01;
+            }
+
+            const camCenter = new THREE.Vector3(
+                0.5 * (globalMaxMin[0].max - globalMaxMin[0].min) + globalMaxMin[0].min,
+                0.5 * (globalMaxMin[1].max - globalMaxMin[1].min) + globalMaxMin[1].min,
+                0.5 * (globalMaxMin[2].max - globalMaxMin[2].min) + globalMaxMin[2].min );
+            const viewSize = 1.5 * bigrange; // make the view area a little bigger than the object
+            const aspectRatio = canvas.clientWidth / canvas.clientHeight;
+            const originalAspect = aspectRatio;
+
+            function initCam(camera) {
+                // XXX this needs to treat the perspective and orthographic
+                // cameras differently
+                camera.position.set(
+                    data.camera.position_x,
+                    data.camera.position_y,
+                    data.camera.position_z);
+                camera.lookAt(camCenter);
+                camera.updateMatrixWorld();
+            }
+
+            let cameraType = data.camera.type;
+            const persCamera = new THREE.PerspectiveCamera(
+                50, aspectRatio, 1, 100000);
+            initCam(persCamera);
+            const orthCamera = new THREE.OrthographicCamera(
+                -aspectRatio * viewSize / 2, aspectRatio * viewSize / 2,
+                viewSize / 2, -viewSize / 2, -100000, 100000);
+            initCam(orthCamera);
+
+            function assignMesh(positions, color, opacity, faces) {
+                const baseGeometry = new THREE.BufferGeometry();
+                baseGeometry.setAttribute('position', new THREE.BufferAttribute(
+                    positions, 3));
+
+                // EdgeSplitModifier is used to combine verts so that smoothing normals can be generated WITHOUT removing the hard edges of the design
+                // REF: https://threejs.org/examples/?q=edge#webgl_modifier_edgesplit - https://github.com/mrdoob/three.js/pull/20535
+                const edgeSplit = new EdgeSplitModifier();
+                const cutOffAngle = 20;
+                const geometry = edgeSplit.modify(
+                    baseGeometry, cutOffAngle * Math.PI / 180);
+                geometry.computeVertexNormals();
+                geometry.computeBoundingSphere();
+
+                const material = new THREE.MeshLambertMaterial({
+                    color: color,
+                    side: THREE.DoubleSide,
+                    vertexColors: false,
+                    flatShading: false,
+                    opacity: opacity,
+                    transparent: opacity != 1.0,
+                    fog: false
+                });
+
+                const meshobj = new THREE.Mesh(geometry, material);
+                meshobj.name = meshobj.uuid;
+                faces.push(meshobj.uuid);
+                scene.add(meshobj);
+                raycasterObj.push(meshobj);
+            }
+
+            const objects = [];
+            for (const obj of data.objects) {
+                // Each face gets its own material because they each can
+                // have different colors
+                const faces = [];
+                if (obj.facesToFacets.length > 0) {
+                    for (let f=0; f < obj.facesToFacets.length; f++) {
+                        const facecolor = obj.faceColors.length > 0 ? obj.faceColors[f] : obj.color;
+                        const positions = new Float32Array(obj.facesToFacets[f].length * 9);
+                        for (let a=0; a < obj.facesToFacets[f].length; a++) {
+                            for (let b=0; b < 3; b++) {
+                                for (let c=0; c < 3; c++) {
+                                    positions[9 * a + 3 * b + c] = obj.verts[3 * obj.facets[3 * obj.facesToFacets[f][a] + b ] + c ];
+                                }
+                            }
+                        }
+                        assignMesh(positions, facecolor, obj.opacity, faces);
+                    }
+                } else {
+                    // No facesToFacets means that there was a tessellate()
+                    // mismatch inside FreeCAD. Use all facets in object to
+                    // create this mesh
+                    const positions = new Float32Array(obj.facets.length * 3);
+                    for (let a=0; a < obj.facets.length; a++) {
+                        for (let b=0; b < 3; b++) {
+                            positions[3 * a + b] = obj.verts[3 * obj.facets[a] + b];
+                        }
+                    }
+                    assignMesh(positions, obj.color, obj.opacity, faces);
+                }
+
+                // Wires
+                // cannot have lines in WebGL that are wider than 1px due to browser limitations so Line2 workaround lib is used
+                // REF: https://threejs.org/examples/?q=fat#webgl_lines_fat - https://jsfiddle.net/brLk6aud/1/
+                // This material is shared by all wires in this object
+                const wirematerial = new LineMaterial( {
+                    color: defaultWireColor,
+                    linewidth: defaultWireLineWidth,
+                    dashed: false, dashSize: 1, gapSize: 1, dashScale: 3
+                } );
+                wirematerial.resolution.set(
+                    canvas.clientWidth * window.devicePixelRatio,
+                    canvas.clientHeight * window.devicePixelRatio);
+
+                const wires = [];
+                for (const w of obj.wires) {
+                    const wiregeometry = new LineGeometry();
+                    wiregeometry.setPositions(w);
+                    const wire = new Line2(wiregeometry, wirematerial);
+                    wire.computeLineDistances();
+                    wire.scale.set(1, 1, 1);
+                    wire.name = wire.uuid;
+                    scene.add(wire);
+                    wires.push(wire.name);
+                }
+                objects.push({
+                    data: obj,
+                    faces: faces,
+                    wires: wires,
+                    wirematerial: wirematerial
+                });
+            }
+
+            // ---- GUI Init ----
+            const gui = new GUI({ width: 300 });
+            const guiparams = {
+                wiretype: 'Normal',
+                wirewidth: defaultWireLineWidth,
+                wirecolor: '#' + defaultWireColor.getHexString(),
+                clippingx: 100,
+                clippingy: 100,
+                clippingz: 100,
+                cameraType: cameraType,
+                navright: function() { navChange([1,  0, 0]); },
+                navtop:   function() { navChange([0,  0, 1]); },
+                navfront: function() { navChange([0, -1, 0]); }
+            };
+
+            // ---- Wires ----
+            const wiretypes = { Normal: 'Normal', Dashed: 'Dashed', None: 'None' };
+
+            const wireFolder = gui.addFolder('Wire');
+            wireFolder.add(guiparams, 'wiretype', wiretypes).name('Wire Display').onChange(wireChange);
+            wireFolder.add(guiparams, 'wirewidth').min(1).max(5).step(1).name('Wire Width').onChange(wireChange);
+            wireFolder.addColor(guiparams, 'wirecolor').name('Wire Color').onChange(wireChange);
+
+            function wireChange() {
+                for (const obj of objects) {
+                    const m = obj.wirematerial;
+                    if (m.dashed) {
+                        if (guiparams.wiretype != 'Dashed') {
+                            m.dashed = false;
+                            delete m.defines.USE_DASH;
+                        }
+                    } else {
+                        if (guiparams.wiretype == 'Dashed') {
+                            m.dashed = true;
+                            // Dashed lines require this as of r122. delete if not dashed
+                            m.defines.USE_DASH = ""; // https://discourse.threejs.org/t/dashed-line2-material/10825
+                        }
+                    }
+                    if (guiparams.wiretype == 'None') {
+                        m.visible = false;
+                    } else {
+                        m.visible = true;
+                    }
+                    m.linewidth = guiparams.wirewidth;
+                    m.color = new THREE.Color(guiparams.wirecolor);
+                    m.needsUpdate = true;
+                }
+                requestRender();
+            }
+            wireChange();
+
+            // ---- Clipping ----
+            const clippingFolder = gui.addFolder('Clipping');
+            clippingFolder.add(guiparams, 'clippingx').min(0).max(100).step(1).name('X-Axis Clipping').onChange(clippingChange);
+            clippingFolder.add(guiparams, 'clippingy').min(0).max(100).step(1).name('Y-Axis Clipping').onChange(clippingChange);
+            clippingFolder.add(guiparams, 'clippingz').min(0).max(100).step(1).name('Z-Axis Clipping').onChange(clippingChange);
+
+            const clipPlaneX = new THREE.Plane(new THREE.Vector3( -1, 0, 0 ), 0);
+            const clipPlaneY = new THREE.Plane(new THREE.Vector3( 0, -1, 0 ), 0);
+            const clipPlaneZ = new THREE.Plane(new THREE.Vector3( 0, 0, -1 ), 0);
+
+            function clippingChange() {
+                if (guiparams.clippingx < 100 || guiparams.clippingy < 100 || guiparams.clippingz < 100) {
+                    if (renderer.clippingPlanes.length == 0) {
+                        renderer.clippingPlanes.push(clipPlaneX, clipPlaneY, clipPlaneZ);
+                    }
+                }
+                clipPlaneX.constant = (globalMaxMin[0].max - globalMaxMin[0].min) * guiparams.clippingx / 100.0 + globalMaxMin[0].min;
+                clipPlaneY.constant = (globalMaxMin[1].max - globalMaxMin[1].min) * guiparams.clippingy / 100.0 + globalMaxMin[1].min;
+                clipPlaneZ.constant = (globalMaxMin[2].max - globalMaxMin[2].min) * guiparams.clippingz / 100.0 + globalMaxMin[2].min;
+                requestRender();
+            }
+
+            // ---- Camera & Navigation ----
+            const camFolder = gui.addFolder('Camera');
+            const cameraTypes = { Perspective: 'Perspective', Orthographic: 'Orthographic' };
+            camFolder.add(guiparams, 'cameraType', cameraTypes).name('Camera type').onChange(cameraChange);
+            camFolder.add(guiparams, 'navright').name('View Right');
+            camFolder.add(guiparams, 'navtop').name('View Top');
+            camFolder.add(guiparams, 'navfront').name('View Front');
+
+            function navChange(v) {
+                const t = new THREE.Vector3();
+                new THREE.Box3().setFromObject(scene).getSize(t);
+                persControls.object.position.set(
+                    v[0] * t.x * 2 + camCenter.x,
+                    v[1] * t.y * 2 + camCenter.y,
+                    v[2] * t.z * 2 + camCenter.z);
+                persControls.target = camCenter;
+                persControls.update();
+                orthControls.object.position.set(
+                    v[0] * t.x + camCenter.x,
+                    v[1] * t.y + camCenter.y,
+                    v[2] * t.z + camCenter.z);
+                orthControls.target = camCenter;
+                orthControls.update();
+                // controls.update() implicitly calls requestRender()
+            }
+
+            function cameraChange(v) {
+                cameraType = v;
+                requestRender();
+            }
+
+            const guiObjects = gui.addFolder('Objects');
+            for (const obj of objects) {
+                // Ignore objects with no vertices
+                if (obj.data.verts.length > 0) {
+                    const guiObjData = {
+                        obj: obj, color: obj.data.color, opacity: obj.data.opacity };
+                    const guiObject = guiObjects.addFolder(obj.data.name);
+                    guiObject.addColor(guiObjData, 'color').name('Color').onChange(GUIObjectChange);
+                    guiObject.add(guiObjData, 'opacity').min(0.0).max(1.0).step(0.05).name('Opacity').onChange(GUIObjectChange);
+                }
+            }
+
+            function GUIObjectChange(v) {
+                for (const f of this.object.obj.faces) {
+                    const m = scene.getObjectByName(f).material;
+                    if (this.property == 'color') {
+                        m.color.setStyle(v);
+                    }
+                    if (this.property == 'opacity') {
+                        m.opacity = v;
+                        m.transparent = (v != 1.0);
+                    }
+                }
+                if (this.property == 'opacity') {
+                    const m = this.object.obj.wirematerial;
+                    m.opacity = v;
+                    m.transparent = (v != 1.0);
+                }
+                requestRender();
+            }
+
+            // Make simple orientation arrows and box - REF: http://jsfiddle.net/b97zd1a3/16/
+            const arrowCanvas = document.querySelector('#arrowCanvas');
+            const arrowRenderer = new THREE.WebGLRenderer({
+                alpha: true,
+                canvas: arrowCanvas
+            }); // clear
+            arrowRenderer.setClearColor(0x000000, 0);
+            arrowRenderer.setSize(arrowCanvas.clientWidth * window.devicePixelRatio,
+                                  arrowCanvas.clientHeight * window.devicePixelRatio,
+                                  false);
+
+            const arrowScene = new THREE.Scene();
+
+            const arrowCamera = new THREE.PerspectiveCamera(
+                50, arrowCanvas.clientWidth / arrowCanvas.clientHeight, 1, 500 );
+            arrowCamera.up = persCamera.up; // important!
+
+            const arrowPos = new THREE.Vector3(0, 0, 0);
+            arrowScene.add(new THREE.ArrowHelper(
+                new THREE.Vector3(1, 0, 0), arrowPos, 60, 0x7F2020, 20, 10));
+            arrowScene.add(new THREE.ArrowHelper(
+                new THREE.Vector3(0, 1, 0), arrowPos, 60, 0x207F20, 20, 10));
+            arrowScene.add(new THREE.ArrowHelper(
+                new THREE.Vector3(0, 0, 1), arrowPos, 60, 0x20207F, 20, 10));
+            arrowScene.add(new THREE.Mesh(
+                new THREE.BoxGeometry(40, 40, 40),
+                new THREE.MeshLambertMaterial(
+                    { color: 0xaaaaaa, flatShading: false })
+            ));
+            arrowScene.add(new THREE.HemisphereLight(0xC7E8FF, 0xFFE3B3, 1.2));
+
+            // Controls
+            const persControls = new OrbitControls(persCamera, renderer.domElement);
+            persControls.target = camCenter; // rotate around center of parts
+            // persControls.enablePan = false;
+            // persControls.enableDamping = true;
+            persControls.update();
+            const orthControls = new OrbitControls(orthCamera, renderer.domElement);
+            orthControls.target = camCenter; // rotate around center of parts
+            // orthControls.enablePan = false;
+            // orthControls.enableDamping = true;
+            orthControls.update();
+
+            function render() {
+                renderRequested = false;
+                persControls.update();
+                if (cameraType == 'Perspective') {
+                    arrowCamera.position.copy(persCamera.position);
+                    arrowCamera.position.sub(persControls.target);
+                }
+                orthControls.update();
+                if (cameraType == 'Orthographic') {
+                    arrowCamera.position.copy(orthCamera.position);
+                    arrowCamera.position.sub(orthControls.target);
+                }
+                arrowCamera.lookAt(arrowScene.position);
+                arrowCamera.position.setLength(200);
+
+                if (cameraType == 'Perspective') {
+                    renderer.render(scene, persCamera);
+                }
+                if (cameraType == 'Orthographic') {
+                    renderer.render(scene, orthCamera);
+                }
+                arrowRenderer.render(arrowScene, arrowCamera);
+            };
+
+            function requestRender() {
+                if (!renderRequested) {
+                    renderRequested = true;
+                    requestAnimationFrame(render);
+                }
+            }
+
+            persControls.addEventListener('change', requestRender);
+            orthControls.addEventListener('change', requestRender);
+            renderer.domElement.addEventListener('mousemove', onMouseMove);
+            window.addEventListener('resize', onMainCanvasResize, false);
+
+            onMainCanvasResize();
+            requestRender();
+
+            function onMainCanvasResize() {
+                const pixelRatio = window.devicePixelRatio;
+                const width = canvas.clientWidth * pixelRatio | 0;
+                const height = canvas.clientHeight * pixelRatio | 0;
+                const needResize = canvas.width !== width || canvas.height !== height;
+                const aspect = canvas.clientWidth / canvas.clientHeight;
+                if (needResize) {
+                    renderer.setSize(width, height, false);
+
+                    // See https://stackoverflow.com/questions/39373113/three-js-resize-window-not-scaling-properly
+                    const change = originalAspect / aspect;
+                    const newSize = viewSize * change;
+                    orthCamera.left = -aspect * newSize / 2;
+                    orthCamera.right = aspect * newSize  / 2;
+                    orthCamera.top = newSize / 2;
+                    orthCamera.bottom = -newSize / 2;
+                    orthCamera.updateProjectionMatrix();
+
+                    persCamera.aspect = canvas.clientWidth / canvas.clientHeight;
+                    persCamera.updateProjectionMatrix();
+                }
+
+                for (const obj of objects) {
+                    obj.wirematerial.resolution.set(width, height);
+                }
+                requestRender();
+            }
+
+            // XXX use mouse click to toggle the gui for the selected object?
+
+            function onMouseMove(e)  {
+                let c = false;
+                if (cameraType == 'Orthographic') {
+                    c = orthCamera;
+                }
+                if (cameraType == 'Perspective') {
+                    c = persCamera;
+                }
+                if (!c) {
+                    return;
+                }
+
+                const raycaster = new THREE.Raycaster();
+                raycaster.setFromCamera(new THREE.Vector2(
+                    (e.clientX / canvas.clientWidth) * 2 - 1,
+                    -(e.clientY / canvas.clientHeight) * 2 + 1),
+                                        c);
+                const intersects = raycaster.intersectObjects(raycasterObj);
+
+                let chosen = '';
+                for (const i of intersects) {
+                    const m = i.object.material;
+                    if (m.opacity > 0) {
+                        if (m.emissive.getHex() == 0x000000) {
+                            m.emissive.setHex( 0x777777 );
+                            m.needsUpdate = true;
+                            requestRender();
+                        }
+                        chosen = i.object.name;
+                        break;
+                    }
+                }
+                for (const r of raycasterObj) {
+                    if (r.name == chosen) {
+                        continue;
+                    }
+                    if (r.material.emissive.getHex() != 0x000000) {
+                        r.material.emissive.setHex(0x000000);
+                        r.material.needsUpdate = true;
+                        requestRender();
+                    }
+                }
+            }
+        </script>
+    </body>
+</html>
